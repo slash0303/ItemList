@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>item list</title>
+  <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <header>
+    <h1 id="item-general-title"></h1>
+    <button id="add-btn" class="add-btn" onclick="dialogHandler('add', 'open')">Add</button>
+  </header>
+  <main>
+    <!-- add dialog start -->
+    <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
+      <div class="dialog-margin-area"></div>
+      <div class="center-container">
+        <form id="add-dialog-bg" class="dialog-content-container" method="POST" charset="utf-8" action="/add">
+          <div class="center-container">
+            <div class="dialog-margin-area"></div>
+            <label class="add-dialog-label">Category</label>
+            <input type="text" name="add_category" class="input-text">
+            <div class="dialog-margin-area"></div>
+            <label class="add-dialog-label">Text</label>
+            <input type="text" name="add_item" class="input-text">
+            <div class="dialog-margin-area"></div>
+            <button class="add-btn" type="submit">add content</button>
+            <div class="dialog-margin-area"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- add dialog end -->
+    <!-- menu dialog start -->
+    <div id="menu-dialog-fade" class="dialog-fade" onclick="dialogHandler('menu', 'close')">
+      <div class="dialog-margin-area"></div>
+        <div class="dialog-general-container">
+          <div class="center-container">
+          <div id="menu-content" class="dialog-content-container"></div>
+          <div class="dialog-margin-area"></div>
+          <form class="dialog-content-container" method="POST" charset="utf-8" action="/add">
+            <div class="center-container">
+              <button id="modify-button" class="dialog-content-button" type="submit">Modify</button>
+              <div class="dialog-line"></div>
+              <button id="move-button" class="dialog-content-button" type="button">Move</button>
+              <div class="dialog-line"></div>
+              <button id="remove-button" class="dialog-content-button" type="button" onclick="console.log(1)">Remove</button>
+            </div>
+          </form>
+          <div class="dialog-margin-area"></div>
+          <div class="dialog-content-container">
+            <button id="cancel-button" class="dialog-content-button">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- menu dialog end -->
+    <!-- item list start -->
+    <div id="category-container">
+    </div>
+    <!-- item list end -->
+  </main>
+  <script src="../static/js/script.js"></script>
+</body>
+</html>

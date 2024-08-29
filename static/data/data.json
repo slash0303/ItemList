@@ -1,0 +1,17 @@
+{
+    "ㅁㄴㅇㄹ": {
+        "ㅁㄴㅇㄻㄴㅇ": {
+            "checked": true
+        }
+    },
+    "hello world": {
+        "hello": {
+            "checked": false
+        }
+    },
+    "hello": {
+        "hello": {
+            "checked": true
+        }
+    }
+}

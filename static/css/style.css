@@ -1,0 +1,188 @@
+html, body{
+    margin: 0px;
+}
+
+body{
+    background-color: #f6f6f6;
+}
+
+header{
+    position: sticky;
+}
+
+.add-btn{
+    border: none;
+    border-radius: 0.3rem;
+    padding: 0.5rem 1rem;
+
+    background-color: #3dc132;
+    color: white;
+
+    font-weight: 500;
+    font-size: 1rem;
+    font-family: Pretendard;
+}
+
+.dialog-fade{
+    display: none;
+
+    background-color: #00000050;
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    width: 100vw;
+    height: 100vh;
+
+    transition: all 0.2s;
+}
+
+.dialog-content-container{
+    background-color: white;
+
+    border-radius: 0.8rem;
+
+    width: fit-content;
+    padding: 0rem 1rem;
+
+    display: flex;
+}
+
+.input-text{
+    display: block;
+
+    border: none;
+    outline: none;
+    border-radius: 10px;
+
+    padding: 0px 1rem;
+
+    width: 20rem;
+    height: 3rem;
+
+    box-shadow: 0.1rem 0.1rem 1rem rgba(0, 0, 0, 0.36);
+
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: Pretendard;
+}
+
+.center-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dialog-margin-area{
+    height: 1rem;
+}
+
+.add-dialog-label{
+    font-weight: 600;
+    font-family: Pretendard;
+    font-size: 1.1rem;
+
+    margin-bottom: 1rem;
+}
+
+.category-container{
+    padding: 0px 30%;
+}
+
+.form-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    padding: 1rem;
+
+    background-color: white;
+}
+
+.item-content-checkbox{
+    border-radius: 100%;
+    border: solid;
+    border-color: #e8e8e8;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #00000000;
+    
+    width: 1rem;
+    height: 1rem;
+}
+
+.item-content-checkbox-checked{
+    border-radius: 100%;
+    border: solid;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #3dc132;
+    background-color: #3dc132;
+
+    width: 1rem;
+    height: 1rem;
+}
+
+.item-content-title{
+    font-weight: 500;
+    font-family: Pretendard;
+    font-size: 1rem;
+
+    text-align: left;
+    width: 100%;
+}
+
+.item-content-menu-button{
+    background-color: #00000000;
+    border: none;
+    outline: none;
+}
+
+#menu-content{
+    padding: 0.8rem 4rem;
+
+    font-family: Pretendard;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.dialog-content-button{
+    outline: none;
+    border: none;
+
+    padding: 0.8rem 4rem;
+
+    background-color: #00000000;
+
+    font-family: Pretendard;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.dialog-line{
+    box-shadow: none;
+    border: none;
+    border-radius: 1rem;
+
+    height: 2px;
+    width: 100%;
+
+    background-color: #e8e8e8;
+}
+
+#remove-button{
+    color: #f10000;
+}
+
+/* 
+img{
+    width: 1rem;
+    height: 1rem;
+} */
