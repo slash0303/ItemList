@@ -6,12 +6,28 @@
     },
     "hello world": {
         "hello": {
-            "checked": false
+            "checked": true
         }
     },
     "hello": {
         "hello": {
+            "checked": false
+        },
+        "fuckyou": {
             "checked": true
+        }
+    },
+    "nice": {
+        "개잘되네 ㅋㅋ": {
+            "checked": true
+        }
+    },
+    "": {
+        "": {
+            "checked": true
+        },
+        "ㅁㄴㅇㄹ": {
+            "checked": false
         }
     }
 }
