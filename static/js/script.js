@@ -26,18 +26,28 @@ class ItemComponent extends HTMLElement{
         new Error("an error occured while in checkbox generating");
     }
 
+    // create checkbox
     checkbox.setAttribute("name", "title");
     checkbox.setAttribute("value", this.getAttribute("title"));
-    checkbox.addEventListener("click", (e)=>{this.changeCheckMode(e)});
     let checkImg = document.createElement("img");
     checkImg.setAttribute("src", "../static/res/checkIcon.svg");
     checkbox.appendChild(checkImg);
+    checkbox.addEventListener("click", (e)=>{this.changeCheckMode(e)});
 
+    /*
+    checkbox에 각각 event listener를 등록할게 아니라 
+    container(form으로 바꾸기)에 event listener를 주고 
+    그 eventlistener가 이벤트 객체를 받아서 .target으로 정보를 가져온 다음
+    해당 target의 정보만 포함하여 form요청을 보내도록 설계하기
+    */
+
+    // create element which indicates 'title'
     this.title = this.getAttribute("title");
     let checkboxId = "checkId"
     checkbox.setAttribute("id", checkboxId);
     formContainer.appendChild(checkbox);
 
+    // create form content which includes data about 'category'
     let titleForForm = document.createElement("input");
     titleForForm.setAttribute("type", "hidden");
     titleForForm.setAttribute("name", "category");
@@ -145,7 +155,21 @@ fetchData().then((data)=>{console.log(data);
   .then(()=>{
     document.querySelectorAll(".form-container").forEach((formContainer)=>{
       formContainer.addEventListener("submit", (e)=>{
-      e.preventDefault();
+        // remove default feature because it occurs flickering.
+        e.preventDefault();
+        // send new POST request in JS
+        // find HTML element about submit button(checkbox) of item.
+        let submitButton = formContainer.querySelector("button[type=submit]");
+        // create body of HTTP request (You should give parameters to instance of 'FormData')
+        let form = new FormData(formContainer, submitButton);
+        fetch("/data",
+          {
+            method: "POST",
+            body: form
+          }
+        );
+        console.log(form);
+        console.log(formContainer);
       });
     });
   });

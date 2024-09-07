@@ -57,8 +57,6 @@ def add_page():
         data[add_category] = {}
         data[add_category][add_item] = {"checked": False}
 
-    # data[add_category] = {}
-    # data[add_category][add_item] = {"checked": False}
     jsonE.dumps(r"./static/data/data.json", data)
     return redirect(url_for("index_page"))
 
