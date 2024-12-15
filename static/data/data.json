@@ -1,32 +1,31 @@
 {
     "ㅁㄴㅇㄹ": {
-        "ㅁㄴㅇㄻㄴㅇ": {
-            "checked": true
-        }
-    },
-    "hello world": {
-        "hello": {
-            "checked": true
-        }
-    },
-    "hello": {
-        "hello": {
+        "ㅁㄴㅇㄹ": {
             "checked": false
         },
-        "fuckyou": {
-            "checked": true
-        }
-    },
-    "nice": {
-        "개잘되네 ㅋㅋ": {
-            "checked": true
-        }
-    },
-    "": {
-        "": {
-            "checked": true
+        "ㄴㅇ맒ㄴㅇ란ㅇ미": {
+            "checked": false
         },
-        "ㅁㄴㅇㄹ": {
+        "ㅇㄴㄻㄷㅈㄻㄴㅇㄹ": {
+            "checked": false
+        },
+        "ㄻㅈ3ㄷㅁㅈ": {
+            "checked": false
+        },
+        "ㅁㄴㄹㄷㅁㄹㄴ": {
+            "checked": false
+        }
+    },
+    "ㅁㄴㅇㄻㄴㅇㄹ": {
+        "럼ㄴ대ㅑ러니아러": {
+            "checked": false
+        }
+    },
+    "머리널": {
+        "ㅇ너랴매넏ㄻ": {
+            "checked": false
+        },
+        "ㄹ머ㅑ대러먄어": {
             "checked": false
         }
     }

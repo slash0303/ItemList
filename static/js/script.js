@@ -1,3 +1,43 @@
+class FocusedElement{
+  constructor(){
+    // find 'category-container' and attach eventlistener about 'changeFocus'.
+    this.categoryContainer = document.getElementById("category-container");
+    this.categoryContainer.addEventListener("click", (e)=>{this.changeFocus(e)});
+  }
+
+  changeFocus(event){
+    console.log(event);
+    this.element = event.srcElement.parentElement.parentElement;
+    this.title = this.element.getAttribute("title");
+    this.category = this.element.getAttribute("category");
+  }
+}
+// focused system: track the element which pressed by user.
+let focusedElement = new FocusedElement();
+
+
+
+class ViewState{
+  constructor(){
+    this.dialogIdFrame = "-dialog-fade";
+    this.dialogList = ["add", "menu", "modify"];
+    this.dialogIsOpen = false;
+  }
+  updateDialogState(){
+    this.dialogIsOpen = false;
+    this.dialogList.forEach((dialogItem)=>{
+      if(document.getElementById(dialogItem+this.dialogIdFrame).style.display == "block"){
+        this.dialogIsOpen = true;
+        return 0;
+      }
+    });
+    console.log(this.dialogIsOpen);
+  }
+}
+let viewState = new ViewState();
+
+
+
 class ItemComponent extends HTMLElement{
   constructor(){
     super();
@@ -80,12 +120,14 @@ class ItemComponent extends HTMLElement{
   itemMenuPopup() {
     let menuContent = document.getElementById("menu-content");
     menuContent.innerHTML = this.getAttribute("title");
+    menuContent.setAttribute("title", this.getAttribute("title"));
+    menuContent.setAttribute("category", this.getAttribute("category"));
     dialogHandler("menu", "open");
-  }
-
-  
+  }  
 }
 customElements.define("item-component", ItemComponent);
+
+
 
 // the function to change mode of checkbox.
 function changeCheckboxMode(checkboxButton){
@@ -101,6 +143,8 @@ function changeCheckboxMode(checkboxButton){
       new Error("change checkbox error: checkbox mode is invaild");
   }
 }
+
+
 
 // define class about 'category component'(aka. item container)
 class CategoryComponent extends HTMLElement{
@@ -124,6 +168,8 @@ async function fetchData(){
   });
   return jsonData;
 }
+
+
 
 // render items which included by category in category container
 async function renderItems(jsonData){
@@ -180,57 +226,47 @@ fetchData().then((data)=>{console.log(data);
       // send POST request.
       fetch("/data", 
         {
-          method:"POST",
+          method: "POST",
           body: formBody
         }
       )
     });
-    // document.querySelectorAll(".form-container").forEach((formContainer)=>{
-    //   formContainer.addEventListener("submit", (e)=>{
-    //     // remove default feature because it occurs flickering.
-    //     e.preventDefault();
-    //     // send new POST request in JS
-    //     // find HTML element about submit button(checkbox) of item.
-    //     let submitButton = formContainer.querySelector("button[type=submit]");
-    //     // create body of HTTP request (You should give parameters to instance of 'FormData')
-    //     let form = new FormData(formContainer, submitButton);
-    //     fetch("/data",
-    //       {
-    //         method: "POST",
-    //         body: form
-    //       }
-    //     );
-    //     console.log(form);
-    //     console.log(formContainer);
-    //   });
-    // });
   });
+
+
 
 // change state of dialog (open or close)
 function dialogHandler(type, mode){
-  let targetDialog = undefined;
-  switch(type){
-    case "add":
-      targetDialog = document.getElementById("add-dialog-fade");
-      break;
-    case "menu":
-      targetDialog = document.getElementById("menu-dialog-fade");
-      break;
-    default:
-      new Error("target error: type(name) of dialog is wrong.");
-      break;
-  }
+  const dialogIdFrame = "-dialog-fade";
+  let targetDialog = document.getElementById(type+dialogIdFrame);
   switch(mode){
     case "open":
       targetDialog.style.display = "block";
+      // focus on category input area.
+      if(type == "add"){
+        document.getElementById("add-dialog-input-category").focus();
+      }
       break;
+
     case "close":
       targetDialog.style.display = "none";
       break;
+
     default:
       new Error("mode error");
       break;
   }
+
+  viewState.updateDialogState();
+  if(viewState.dialogIsOpen){
+    // activate scroll prevention
+    document.querySelector("body").style.overflow = "hidden";
+  }
+  else{
+    // deactivate scroll prevention
+    document.querySelector("body").style.overflow = "visible";
+  }
+  console.log(type, mode);
 }
 
 // function of attaching 'stopPropagation()'. this function can stop background's event.
@@ -244,3 +280,43 @@ function attachStopPropagForDialog(id){
 // attach stopPropagation
 const addDialogId = "add-dialog-bg";
 attachStopPropagForDialog(addDialogId);
+const addDialogApplyButtonId = "apply-button";
+attachStopPropagForDialog(addDialogApplyButtonId);
+
+
+/** send 'item remove' request to server. */
+function removeItem(id){
+  // fetch request
+  let formKeys = ["category", "title"];
+  let dataElement = document.getElementById(id);
+  let formBody = createFormBody(formKeys, dataElement);
+  fetch("/remove",
+    {
+      method: "POST",
+      body: formBody
+    }
+  );
+  // remove item in client's viewport.
+  // get list about all of item components.
+  console.log(focusedElement.element.parentElement);
+  // if the number of child of category becomes 2, delete the category instead of item.
+  // theshold value is 2 because it has a title as a default.
+  if(focusedElement.element.parentElement.childElementCount == 2){
+    focusedElement.element.parentElement.remove();
+  }
+  else{
+    focusedElement.element.remove();
+  }
+}
+
+
+
+/** Create form body for POST request. */
+function createFormBody(keys, targetComponent){
+  let formBody = new FormData;
+  console.log(targetComponent);
+  keys.forEach(key => {
+    formBody.append(key, targetComponent.getAttribute(key));
+  });
+  return formBody;
+}
