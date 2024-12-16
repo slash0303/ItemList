@@ -86,15 +86,22 @@ header{
     transition: all 0.2s;
 }
 
+.dialog-position-margin-area{
+    height: 30vh;
+}
+
 .dialog-content-container{
     background-color: white;
 
     border-radius: 0.8rem;
 
-    width: fit-content;
+    max-width: 22rem;
+    width: 100%;
     padding: 0rem 1rem;
 
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .input-text{
@@ -107,7 +114,8 @@ header{
 
     padding: 0px 1rem;
 
-    width: 20rem;
+    max-width: 20rem;
+    width: 100%;
     height: 3rem;
 
     /* box-shadow: 0.1rem 0.1rem 1rem rgba(0, 0, 0, 0.36); */
@@ -121,9 +129,15 @@ header{
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    width: 100%;
 }
 
 .dialog-margin-area{
+    height: 0.3rem;
+}
+
+.dialog-content-margin-area{
     height: 1rem;
 }
 

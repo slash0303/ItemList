@@ -26,7 +26,7 @@ class ViewState{
   updateDialogState(){
     this.dialogIsOpen = false;
     this.dialogList.forEach((dialogItem)=>{
-      if(document.getElementById(dialogItem+this.dialogIdFrame).style.display == "block"){
+      if(document.getElementById(dialogItem + this.dialogIdFrame).style.display == "block"){
         this.dialogIsOpen = true;
         return 0;
       }
@@ -201,11 +201,10 @@ async function renderItems(jsonData){
   });
 }
 // execute function about render.
-fetchData().then((data)=>{console.log(data);
+fetchData().then((data)=>{
   renderItems(data)})
   .then(()=>{
     let categoryContainer = document.getElementById("category-container");
-    console.log(categoryContainer);
     categoryContainer.addEventListener("submit", (e)=>{
       // remove submit feature to remove flickering caused by refresh.
       e.preventDefault();
@@ -239,9 +238,12 @@ fetchData().then((data)=>{console.log(data);
 function dialogHandler(type, mode){
   const dialogIdFrame = "-dialog-fade";
   let targetDialog = document.getElementById(type+dialogIdFrame);
+  
   switch(mode){
     case "open":
       targetDialog.style.display = "block";
+      targetDialog.style.top = window.scrollY;
+      console.log(window.scrollY);
       // focus on category input area.
       if(type == "add"){
         document.getElementById("add-dialog-input-category").focus();
@@ -266,7 +268,6 @@ function dialogHandler(type, mode){
     // deactivate scroll prevention
     document.querySelector("body").style.overflow = "visible";
   }
-  console.log(type, mode);
 }
 
 // function of attaching 'stopPropagation()'. this function can stop background's event.
@@ -298,7 +299,6 @@ function removeItem(id){
   );
   // remove item in client's viewport.
   // get list about all of item components.
-  console.log(focusedElement.element.parentElement);
   // if the number of child of category becomes 2, delete the category instead of item.
   // theshold value is 2 because it has a title as a default.
   if(focusedElement.element.parentElement.childElementCount == 2){
@@ -320,3 +320,13 @@ function createFormBody(keys, targetComponent){
   });
   return formBody;
 }
+
+
+
+/** Shortcut key event */
+document.addEventListener("keydown", (e)=>{
+  if(e.key == 'a' && e.ctrlKey && viewState.dialogIsOpen){
+    e.preventDefault();
+    dialogHandler("add", "open");
+  }
+});

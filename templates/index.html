@@ -20,23 +20,22 @@
   <main>
     <!-- add dialog start -->
     <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
-      <div class="dialog-margin-area"></div>
+      <div class="dialog-position-margin-area"></div>
       <div class="center-container">
         <form method="POST" charset="utf-8" action="/add">
           <div id="add-dialog-bg" class="dialog-content-container">
             <div class="center-container">
-              <div class="dialog-margin-area"></div>
+              <div class="dialog-content-margin-area"></div>
               <label class="add-dialog-label">Category</label>
               <input required id="add-dialog-input-category" type="text" name="add_category" class="input-text">
               <div class="dialog-margin-area"></div>
               <label class="add-dialog-label">Item name</label>
               <input required id="add-dialog-input-item" type="text" name="add_item" class="input-text">
-              <div class="dialog-margin-area"></div>
-              <div class="dialog-margin-area"></div>
+              <div class="dialog-content-margin-area"></div>
+              <div class="dialog-content-margin-area"></div>
             </div>
           </div>
-          <div class="dialog-margin-area"></div>
-          <div id="add-dialog-button" class="dialog-content-container">
+          <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
             <button class="dialog-content-button">Cancel</button>
             <div class="dialog-line-vertical"></div>
             <button id="apply-button" type="submit" class="dialog-content-button">Apply</button>
