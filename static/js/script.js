@@ -22,16 +22,20 @@ class ViewState{
     this.dialogIdFrame = "-dialog-fade";
     this.dialogList = ["add", "menu", "modify"];
     this.dialogIsOpen = false;
+    this.currentDialog = "closed";
   }
   updateDialogState(){
     this.dialogIsOpen = false;
     this.dialogList.forEach((dialogItem)=>{
       if(document.getElementById(dialogItem + this.dialogIdFrame).style.display == "block"){
         this.dialogIsOpen = true;
-        return 0;
+        this.currentDialog = dialogItem;
+        return 1;
       }
     });
-    console.log(this.dialogIsOpen);
+    if (this.dialogIsOpen == false){
+      this.currentDialog = "closed";
+    }
   }
 }
 let viewState = new ViewState();
@@ -237,13 +241,13 @@ fetchData().then((data)=>{
 // change state of dialog (open or close)
 function dialogHandler(type, mode){
   const dialogIdFrame = "-dialog-fade";
-  let targetDialog = document.getElementById(type+dialogIdFrame);
-  
+  if(type != "closed"){
+    let targetDialog = document.getElementById(type+dialogIdFrame);
+  }
   switch(mode){
     case "open":
       targetDialog.style.display = "block";
-      targetDialog.style.top = window.scrollY;
-      console.log(window.scrollY);
+      targetDialog.style.top = `${window.scrollY}px`;
       // focus on category input area.
       if(type == "add"){
         document.getElementById("add-dialog-input-category").focus();
@@ -325,8 +329,12 @@ function createFormBody(keys, targetComponent){
 
 /** Shortcut key event */
 document.addEventListener("keydown", (e)=>{
-  if(e.key == 'a' && e.ctrlKey && viewState.dialogIsOpen){
+  if(e.key == 'a' && e.ctrlKey && !viewState.dialogIsOpen){
     e.preventDefault();
     dialogHandler("add", "open");
+  }
+  if(e.key == "Escape" && !viewState.dialogIsOpen){
+    e.preventDefault();
+    dialogHandler(viewState.currentDialog, "closed");
   }
 });

@@ -23,5 +23,13 @@
         "좀 더 보기 편하게": {
             "checked": false
         }
+    },
+    "category": {
+        "asdfadfaweif": {
+            "checked": false
+        },
+        "fskadljflaksjef": {
+            "checked": false
+        }
     }
 }
