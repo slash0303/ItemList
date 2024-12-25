@@ -6,7 +6,6 @@ class FocusedElement{
   }
 
   changeFocus(event){
-    console.log(event);
     this.element = event.srcElement.parentElement.parentElement;
     this.title = this.element.getAttribute("title");
     this.category = this.element.getAttribute("category");
@@ -219,7 +218,6 @@ fetchData().then((data)=>{
       let targetId = target.id.split("-");
       let targetIdNum = targetId[1];
       // get element about component of item.
-      console.log(`itemComponent-${targetIdNum}`);
       let itemComponent = document.getElementById(`itemComponent-${targetIdNum}`);
       // extract data from item component to create body of POST request.
       let formBody = new FormData();
@@ -241,9 +239,7 @@ fetchData().then((data)=>{
 // change state of dialog (open or close)
 function dialogHandler(type, mode){
   const dialogIdFrame = "-dialog-fade";
-  if(type != "closed"){
-    let targetDialog = document.getElementById(type+dialogIdFrame);
-  }
+  let targetDialog = document.getElementById(type+dialogIdFrame);
   switch(mode){
     case "open":
       targetDialog.style.display = "block";
@@ -251,6 +247,9 @@ function dialogHandler(type, mode){
       // focus on category input area.
       if(type == "add"){
         document.getElementById("add-dialog-input-category").focus();
+      }
+      else if(type == "modify"){
+        modifyPopup();
       }
       break;
 
@@ -272,6 +271,12 @@ function dialogHandler(type, mode){
     // deactivate scroll prevention
     document.querySelector("body").style.overflow = "visible";
   }
+}
+
+// function for modal about modify
+function modifyPopup(){
+  let modifyContent = document.getElementById("modify-content");
+  modifyContent.innerHTML = focusedElement.title;
 }
 
 // function of attaching 'stopPropagation()'. this function can stop background's event.
@@ -318,7 +323,6 @@ function removeItem(id){
 /** Create form body for POST request. */
 function createFormBody(keys, targetComponent){
   let formBody = new FormData;
-  console.log(targetComponent);
   keys.forEach(key => {
     formBody.append(key, targetComponent.getAttribute(key));
   });
@@ -333,8 +337,8 @@ document.addEventListener("keydown", (e)=>{
     e.preventDefault();
     dialogHandler("add", "open");
   }
-  if(e.key == "Escape" && !viewState.dialogIsOpen){
+  if(e.key == "Escape" && viewState.dialogIsOpen){
     e.preventDefault();
-    dialogHandler(viewState.currentDialog, "closed");
+    dialogHandler(viewState.currentDialog, "close");
   }
 });

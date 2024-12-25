@@ -25,10 +25,12 @@
         }
     },
     "category": {
-        "asdfadfaweif": {
-            "checked": false
-        },
         "fskadljflaksjef": {
+            "checked": true
+        }
+    },
+    "ㅁㄴㅇㄹ": {
+        "ㅁㅇㄻㄴㅇㄹ": {
             "checked": false
         }
     }
