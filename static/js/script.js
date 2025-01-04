@@ -6,6 +6,7 @@ import { fetchData, renderItems, createFormBody, removeItem } from "./renderData
 
 // Function binding for HTML button
 window.dialogHandler = dialogHandler;
+window.removeItem = removeItem;   
 
 
 // Track the element which clicked by user.

@@ -90,6 +90,14 @@ header{
     height: 30vh;
 }
 
+#menu-content, #modify-content{
+    padding: 0.8rem 4rem;
+
+    font-family: Pretendard;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
 .dialog-content-container{
     background-color: white;
 
@@ -233,14 +241,6 @@ header{
 
     display: flex;
     align-items: center;
-}
-
-#menu-content{
-    padding: 0.8rem 4rem;
-
-    font-family: Pretendard;
-    font-size: 1rem;
-    font-weight: 500;
 }
 
 .dialog-content-button{

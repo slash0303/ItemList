@@ -57,11 +57,13 @@ function removeItem(id){
         body: formBody
         }
     );
-    // remove item in client's viewport.
-    // get list about all of item components.
-    // if the number of child of category becomes 2, delete the category instead of item.
-    // theshold value is 2 because it has a title as a default.
-    if(focusedElement.element.parentElement.childElementCount == 2){
+    /** remove item in client's viewport.
+     *  get list about all of item components.
+     *  if the number of child of category becomes 2, delete the category instead of item.
+     *  theshold value is 2 because it has a title as a default.
+     */
+    console.log(focusedElement.element.parentElement.childElementCount);
+    if(focusedElement.element.parentElement.childElementCount <= 2){
         focusedElement.element.parentElement.remove();
     }
     else{

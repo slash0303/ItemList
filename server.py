@@ -58,7 +58,7 @@ def add_page():
     add_item = request.form["add_item"]
     data = jsonE.load(DATA_DIR)
     
-    # modify item that already exist.
+    # modify item if it had already exist.
     if add_category in data.keys():
         if add_item in data[add_category].keys():
             # change state
@@ -88,6 +88,10 @@ def remove_item():
         del data[target_category]
     jsonE.dumps(DATA_DIR, data)
     return redirect(url_for("index_page"))
+
+@app.route("/modify", methods=["POST"])
+def modify_item():
+    target_item = request.form[""]
 
 if __name__ == "__main__":
     app.run(debug=True)

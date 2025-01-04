@@ -20,7 +20,7 @@ class ViewState{
     }
 }
 
-let viewState = window.viewState;
+// let viewState = window.viewState;
 
 /** Description: change state of dialog (open or close) */
 function dialogHandler(type, mode){
@@ -52,8 +52,8 @@ function dialogHandler(type, mode){
             at dialogHandler (modal.js:51:13)
             at HTMLButtonElement.onclick ((index):18:81)
             고쳐라 ㅅㄱ */
-  viewState.updateDialogState();
-  if(viewState.dialogIsOpen){
+  window.viewState.updateDialogState();
+  if(window.viewState.dialogIsOpen){
     // activate scroll prevention
     document.querySelector("body").style.overflow = "hidden";
   }
@@ -77,5 +77,13 @@ function attachStopPropagForDialog(id){
         e.stopPropagation();
     });
 }
+
+function attachEventDialogHandler(){
+  let dialogButtons = document.querySelectorAll(".dialog-handler");
+  dialogButtons.forEach((dialogButton)=>{
+    dialogButton.classList
+  });
+}
+
 
 export { ViewState, dialogHandler, modifyPopup, attachStopPropagForDialog }

@@ -15,11 +15,11 @@
       </button>
       <h1 id="item-general-title" class="header-general-title">title</h1>
     </div>
-    <button id="add-btn" class="add-btn" onclick="dialogHandler('add', 'open')">Add</button>
+    <button id="add-btn" class="add-btn dialog-handler add-open" onclick="dialogHandler('add', 'open')">Add</button>
   </header>
   <main>
     <!-- add dialog start -->
-    <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
+    <div id="add-dialog-fade" class="dialog-fade dialog-handler add-close" onclick="dialogHandler('add', 'close')">
       <div class="dialog-position-margin-area"></div>
       <div class="center-container">
         <form method="POST" charset="utf-8" action="/add">
@@ -45,7 +45,7 @@
     </div>
     <!-- add dialog end -->
     <!-- menu dialog start -->
-    <div id="menu-dialog-fade" class="dialog-fade" onclick="dialogHandler('menu', 'close')">
+    <div id="menu-dialog-fade" class="dialog-fade dialog-handler menu-close" onclick="dialogHandler('menu', 'close')">
       <div class="dialog-margin-area"></div>
         <div class="dialog-general-container">
         <div class="center-container">
@@ -53,7 +53,7 @@
           <div class="dialog-margin-area"></div>
           <form class="dialog-content-container" method="POST" charset="utf-8" action="/add">
             <div class="center-container">
-              <button id="modify-button" class="dialog-content-button" type="button" onclick="dialogHandler('modify', 'open')">Modify</button>
+              <button id="modify-button" class="dialog-content-button dialog-handler modify-open" type="button" onclick="dialogHandler('modify', 'open')">Modify</button>
               <div class="dialog-line-horizontal"></div>
               <button id="move-button" class="dialog-content-button" type="button">Move</button>
               <div class="dialog-line-horizontal"></div>
@@ -69,11 +69,32 @@
     </div>
     <!-- menu dialog end -->
     <!-- modify dialog start -->
-    <div id="modify-dialog-fade" class="dialog-fade" onclick="dialogHandler('modify', 'close')">
+    <div id="modify-dialog-fade" class="dialog-fade dialog-handler modify-close" onclick="dialogHandler('modify', 'close')">
+      <div class="dialog-margin-area"></div>
       <div class="dialog-general-container">
         <div class="center-container">
-          <div id="modify-content" class="dialog-content-container"></div>
-          <!--TODO: modify 만들기, menu 스크롤 시 잘려서 나오는 문제 해결하기-->
+          <form method="POST" charset="utf-8" action="/modify">
+            <div id="modify-content" class="dialog-content-container"></div>
+            <!--TODO: modify 만들기, menu 스크롤 시 잘려서 나오는 문제 해결하기-->
+            <div class="dialog-margin-area"></div>
+            <div id="add-dialog-bg" class="dialog-content-container">
+              <div class="center-container">
+                <div class="dialog-content-margin-area"></div>
+                <label class="add-dialog-label">Category</label>
+                <input required id="add-dialog-input-category" type="text" name="modify_category" class="input-text">
+                <div class="dialog-margin-area"></div>
+                <label class="add-dialog-label">Item name</label>
+                <input required id="add-dialog-input-item" type="text" name="modify_item" class="input-text">
+                <div class="dialog-content-margin-area"></div>
+                <div class="dialog-content-margin-area"></div>
+              </div>
+            </div>
+            <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
+              <button class="dialog-content-button">Cancel</button>
+              <div class="dialog-line-vertical"></div>
+              <button id="apply-button" type="submit" class="dialog-content-button">Apply</button>
+            </div>
+          </form>
         </div>
       </div>
 
