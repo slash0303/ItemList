@@ -1,6 +1,6 @@
 import { CategoryComponent } from "./categoryComponent.js";
 import { FocusedElement, ItemComponent, changeCheckboxMode } from "./itemComponent.js";
-import { ViewState, dialogHandler, modifyPopup, attachStopPropagForDialog } from "./modal.js";
+import { ViewState, dialogHandler, modifyPopup, attachStopPropagWithId, attachStopPropagWithClassAll } from "./modal.js";
 
 import { fetchData, renderItems, createFormBody, removeItem } from "./renderData.js";
 
@@ -56,19 +56,23 @@ fetchData().then((data)=>{
 
 
 // attach stopPropagation
-const addDialogId = "add-dialog-bg";
-attachStopPropagForDialog(addDialogId);
-const addDialogApplyButtonId = "apply-button";
-attachStopPropagForDialog(addDialogApplyButtonId);
+const addDialog_Id = "add-dialog-bg";
+attachStopPropagWithId(addDialog_Id);
+const addDialogApplyButton_Id = "apply-button";
+attachStopPropagWithId(addDialogApplyButton_Id);
+const modifyDialog_Id = "modify-dialog-bg";
+attachStopPropagWithId(modifyDialog_Id);
+const dialogContentContainer_ClassName = "dialog-content-container";
+attachStopPropagWithClassAll(dialogContentContainer_ClassName);
 
 
 /** Shortcut key event */
 document.addEventListener("keydown", (e)=>{
-  if(e.key == 'a' && e.ctrlKey && !viewState.dialogIsOpen){
+  if(e.key == 'a' && e.ctrlKey && !window.viewState.dialogIsOpen){
     e.preventDefault();
     dialogHandler("add", "open");
   }
-  if(e.key == "Escape" && viewState.dialogIsOpen){
+  if(e.key == "Escape" && window.viewState.dialogIsOpen){
     e.preventDefault();
     dialogHandler(viewState.currentDialog, "close");
   }

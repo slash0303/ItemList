@@ -26,10 +26,10 @@
           <div id="add-dialog-bg" class="dialog-content-container">
             <div class="center-container">
               <div class="dialog-content-margin-area"></div>
-              <label class="add-dialog-label">Category</label>
+              <label class="dialog-label">Category</label>
               <input required id="add-dialog-input-category" type="text" name="add_category" class="input-text">
               <div class="dialog-margin-area"></div>
-              <label class="add-dialog-label">Item name</label>
+              <label class="dialog-label">Item name</label>
               <input required id="add-dialog-input-item" type="text" name="add_item" class="input-text">
               <div class="dialog-content-margin-area"></div>
               <div class="dialog-content-margin-area"></div>
@@ -49,7 +49,7 @@
       <div class="dialog-margin-area"></div>
         <div class="dialog-general-container">
         <div class="center-container">
-          <div id="menu-content" class="title-display dialog-content-container"></div>
+          <div id="menu-content" class="dialog-content-container title-display"></div>
           <div class="dialog-margin-area"></div>
           <form class="dialog-content-container" method="POST" charset="utf-8" action="/add">
             <div class="center-container">
@@ -72,30 +72,30 @@
     <div id="modify-dialog-fade" class="dialog-fade dialog-handler modify-close" onclick="dialogHandler('modify', 'close')">
       <div class="dialog-margin-area"></div>
       <div class="dialog-general-container">
+      <form method="POST" charset="utf-8" action="/modify">
         <div class="center-container">
-          <form method="POST" charset="utf-8" action="/modify">
-            <div id="modify-content" class="dialog-content-container title-display"></div>
-            <!--TODO: modify 만들기, menu 스크롤 시 잘려서 나오는 문제 해결하기-->
-            <div class="dialog-margin-area"></div>
-            <div id="add-dialog-bg" class="dialog-content-container">
-              <div class="center-container">
-                <div class="dialog-content-margin-area"></div>
-                <label class="add-dialog-label">Category</label>
-                <input required id="add-dialog-input-category" type="text" name="modify_category" class="input-text">
-                <div class="dialog-margin-area"></div>
-                <label class="add-dialog-label">Item name</label>
-                <input required id="add-dialog-input-item" type="text" name="modify_item" class="input-text">
-                <div class="dialog-content-margin-area"></div>
-                <div class="dialog-content-margin-area"></div>
-              </div>
+          <div id="modify-content" class="dialog-content-container title-display"></div>
+          <!--TODO: modify 만들기, menu 스크롤 시 잘려서 나오는 문제 해결하기-->
+          <div class="dialog-margin-area"></div>
+          <div id="modify-dialog-bg" class="dialog-content-container">
+            <div class="center-container">
+              <div class="dialog-content-margin-area"></div>
+              <label class="dialog-label">Category</label>
+              <input required id="add-dialog-input-category" type="text" name="modify_category" class="input-text">
+              <div class="dialog-margin-area"></div>
+              <label class="dialog-label">Item name</label>
+              <input required id="add-dialog-input-item" type="text" name="modify_item" class="input-text">
+              <div class="dialog-content-margin-area"></div>
+              <div class="dialog-content-margin-area"></div>
             </div>
-            <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
-              <button class="dialog-content-button">Cancel</button>
-              <div class="dialog-line-vertical"></div>
-              <button id="apply-button" type="submit" class="dialog-content-button">Apply</button>
-            </div>
-          </form>
+          </div>
+          <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
+            <button class="dialog-content-button">Cancel</button>
+            <div class="dialog-line-vertical"></div>
+            <button id="apply-button" type="submit" class="dialog-content-button">Apply</button>
+          </div>
         </div>
+      </form>
       </div>
 
     </div>

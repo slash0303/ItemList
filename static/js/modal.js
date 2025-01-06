@@ -71,11 +71,20 @@ function modifyPopup(){
 
 /** Description: function of attaching 'stopPropagation()'.
   * This function can stop background's event. */
-function attachStopPropagForDialog(id){
+function attachStopPropagWithId(id){
     const dialogContainer = document.getElementById(id);
     dialogContainer.addEventListener("click", (e)=>{
         e.stopPropagation();
     });
+}
+
+function attachStopPropagWithClassAll(className){
+  const dialogContainers = document.querySelectorAll(`.${className}`);
+  dialogContainers.forEach((dialogContainer)=>{
+    dialogContainer.addEventListener("click", (e)=>{
+        e.stopPropagation();
+    });
+  });
 }
 
 function attachEventDialogHandler(){
@@ -86,4 +95,4 @@ function attachEventDialogHandler(){
 }
 
 
-export { ViewState, dialogHandler, modifyPopup, attachStopPropagForDialog }
+export { ViewState, dialogHandler, modifyPopup, attachStopPropagWithId, attachStopPropagWithClassAll }
