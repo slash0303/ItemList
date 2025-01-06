@@ -82,7 +82,9 @@ class jsonE:
 			if attr["silent"] != True:
 				LogE.g("dumps json", f"'{file_name}' is dumped")
 		except KeyError:
-			LogE.g("dumps json", f"'{file_name}' is dumped")
+			pass
+		except Exception as e:
+			LogE.e(e, "Location of occurance is 'jsonE.dumps()'")
 	
 	#json load
 	@staticmethod
@@ -96,7 +98,9 @@ class jsonE:
 			if attr["silent"] != True:
 				LogE.g("load json", f"'{file_name}' is loaded")
 		except KeyError:
-			LogE.g("load json", f"'{file_name}' is loaded")
+			pass
+		except Exception as e:
+			LogE.e(e, "Location of occurance is 'jsonE.dumps()'")
 
 		with open(file_name, "r", encoding="utf-8") as json_file:
 			content = json.load(json_file)
