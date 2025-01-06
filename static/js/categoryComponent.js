@@ -1,4 +1,4 @@
-// define class about 'category component'(aka. item container)
+/** Description: Define class about 'category component'(aka. item container) */
 class CategoryComponent extends HTMLElement{
     constructor(){
         super();

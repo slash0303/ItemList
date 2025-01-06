@@ -1,3 +1,4 @@
+/** Description: track user's viewport. ViewState will track the state of modal. */
 class ViewState{
     constructor(){
         this.dialogIdFrame = "-dialog-fade";
@@ -6,21 +7,22 @@ class ViewState{
         this.currentDialog = "closed";
     }
     updateDialogState(){
+        // Set default state
         this.dialogIsOpen = false;
+        // search all of dialog and evaluate about activation.
         this.dialogList.forEach((dialogItem)=>{
-        if(document.getElementById(dialogItem + this.dialogIdFrame).style.display == "block"){
-            this.dialogIsOpen = true;
-            this.currentDialog = dialogItem;
-            return 1;
-        }
+          if(document.getElementById(dialogItem + this.dialogIdFrame).style.display == "block"){
+              this.dialogIsOpen = true;
+              this.currentDialog = dialogItem;
+              return;
+          }
         });
+        // if the states about all of dialogs are closed, set 'currentDialog' propety to 'closed'.
         if (this.dialogIsOpen == false){
-        this.currentDialog = "closed";
+          this.currentDialog = "closed";
         }
     }
 }
-
-// let viewState = window.viewState;
 
 /** Description: change state of dialog (open or close) */
 function dialogHandler(type, mode){
@@ -35,10 +37,10 @@ function dialogHandler(type, mode){
         document.getElementById("add-dialog-input-category").focus();
       }
       else if(type == "modify"){
-        modifyPopup();
+        setModifyDialog();
+        document.getElementById("modify-dialog-input-category").focus();
       }
       break;
-
     case "close":
       targetDialog.style.display = "none";
       break;
@@ -48,11 +50,10 @@ function dialogHandler(type, mode){
       break;
   }
 
-  /** TODO: modal.js:51 Uncaught TypeError: Cannot read properties of undefined (reading 'updateDialogState')
-            at dialogHandler (modal.js:51:13)
-            at HTMLButtonElement.onclick ((index):18:81)
-            고쳐라 ㅅㄱ */
+  // update viewState
   window.viewState.updateDialogState();
+
+  // control scroll prevention
   if(window.viewState.dialogIsOpen){
     // activate scroll prevention
     document.querySelector("body").style.overflow = "hidden";
@@ -63,21 +64,35 @@ function dialogHandler(type, mode){
   }
 }
 
-/** Description: function for modal about modify */
-function modifyPopup(){
-    let modifyContent = document.getElementById("modify-content");
-    modifyContent.innerHTML = focusedElement.title;
+/** Description: Setting modify dialog before the user uses it. */
+function setModifyDialog(){
+  // Close menu dialog.
+  dialogHandler("menu", "close");
+
+  // find data fields from the form of modify dialog.
+  let moddedCategory = document.getElementById("modify-dialog-input-category")
+  let moddedItem = document.getElementById("modify-dialog-input-item")
+  let originalCategory = document.getElementById("modify-dialog-original-category")
+  let originalItem = document.getElementById("modify-dialog-original-item")
+
+  // set the data into the fields.
+  originalCategory.value = moddedCategory.placeholder = window.focusedElement.category
+  originalItem.value = moddedItem.placeholder = window.focusedElement.title
 }
 
-/** Description: function of attaching 'stopPropagation()'.
-  * This function can stop background's event. */
+
+/** Description: function for attaching 'stopPropagation()'.
+  * This function find the element from ID and stop background's event.
+  */
 function attachStopPropagWithId(id){
     const dialogContainer = document.getElementById(id);
     dialogContainer.addEventListener("click", (e)=>{
         e.stopPropagation();
     });
 }
-
+/** Description: function for attaching 'stopPropagation()' to elements
+ * This function find the elements from class and stop all of their background's event.
+ */
 function attachStopPropagWithClassAll(className){
   const dialogContainers = document.querySelectorAll(`.${className}`);
   dialogContainers.forEach((dialogContainer)=>{
@@ -87,12 +102,5 @@ function attachStopPropagWithClassAll(className){
   });
 }
 
-function attachEventDialogHandler(){
-  let dialogButtons = document.querySelectorAll(".dialog-handler");
-  dialogButtons.forEach((dialogButton)=>{
-    dialogButton.classList
-  });
-}
 
-
-export { ViewState, dialogHandler, modifyPopup, attachStopPropagWithId, attachStopPropagWithClassAll }
+export { ViewState, dialogHandler, setModifyDialog, attachStopPropagWithId, attachStopPropagWithClassAll }

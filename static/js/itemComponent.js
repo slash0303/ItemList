@@ -7,7 +7,10 @@ class FocusedElement{
     }
 
     changeFocus(event){
-        this.element = event.srcElement.parentElement.parentElement;
+        this.element = event.srcElement;
+        while(this.element.nodeName != "ITEM-COMPONENT"){
+            this.element = this.element.parentElement;
+        }
         this.title = this.element.getAttribute("title");
         this.category = this.element.getAttribute("category");
     }

@@ -1,8 +1,8 @@
 import { CategoryComponent } from "./categoryComponent.js";
 import { FocusedElement, ItemComponent, changeCheckboxMode } from "./itemComponent.js";
-import { ViewState, dialogHandler, modifyPopup, attachStopPropagWithId, attachStopPropagWithClassAll } from "./modal.js";
+import { ViewState, dialogHandler, setModifyDialog, attachStopPropagWithId, attachStopPropagWithClassAll } from "./modal.js";
 
-import { fetchData, renderItems, createFormBody, removeItem } from "./renderData.js";
+import { fetchData, renderItems, removeItem } from "./renderData.js";
 
 // Function binding for HTML button
 window.dialogHandler = dialogHandler;
@@ -50,7 +50,7 @@ fetchData().then((data)=>{
           method: "POST",
           body: formBody
         }
-      )
+      );
     });
   });
 
@@ -58,12 +58,14 @@ fetchData().then((data)=>{
 // attach stopPropagation
 const addDialog_Id = "add-dialog-bg";
 attachStopPropagWithId(addDialog_Id);
-const addDialogApplyButton_Id = "apply-button";
+const addDialogApplyButton_Id = "add-apply-button";
 attachStopPropagWithId(addDialogApplyButton_Id);
 const modifyDialog_Id = "modify-dialog-bg";
 attachStopPropagWithId(modifyDialog_Id);
-const dialogContentContainer_ClassName = "dialog-content-container";
-attachStopPropagWithClassAll(dialogContentContainer_ClassName);
+const modifyDialogApplyButton_Id = "modify-apply-button";
+attachStopPropagWithId(modifyDialogApplyButton_Id);
+const dialogContainer_ClassName = "dialog-content-container";
+attachStopPropagWithClassAll(dialogContainer_ClassName);
 
 
 /** Shortcut key event */
@@ -75,5 +77,36 @@ document.addEventListener("keydown", (e)=>{
   if(e.key == "Escape" && window.viewState.dialogIsOpen){
     e.preventDefault();
     dialogHandler(viewState.currentDialog, "close");
+  }
+});
+
+/** cancel submit because HTML form cannot send PATCH method */
+let modifyDialogContainer = document.getElementById("modify-dialog-container");
+modifyDialogContainer.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  let moddedCategory = document.getElementById("modify-dialog-input-category")
+  let moddedItem = document.getElementById("modify-dialog-input-item")
+  let originalCategory = document.getElementById("modify-dialog-original-category")
+  let originalItem = document.getElementById("modify-dialog-original-item")
+
+  let formBody = new FormData();
+  formBody.append("modded_item", moddedItem.value);
+  formBody.append("modded_category", moddedCategory.value);
+  formBody.append("original_item", originalItem.value);
+  formBody.append("original_category", originalCategory.value);
+
+  const response = await fetch("/data", 
+    {
+      method: "PATCH",
+      body: formBody
+    }
+  );
+
+  if(response.ok){
+    location.reload();
+  }
+  else{
+    console.log(response);
   }
 });
