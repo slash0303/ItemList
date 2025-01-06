@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 from eaxtension import jsonE
 from eaxtension import LogE
 
@@ -56,7 +56,7 @@ def send_data_to_client():
 def add_page():
     add_category = request.form["add_category"]
     add_item = request.form["add_item"]
-    data = jsonE.load(DATA_DIR)
+    data = jsonE.load(DATA_DIR) 
     
     # modify item if it had already exist.
     if add_category in data.keys():
@@ -73,12 +73,12 @@ def add_page():
     jsonE.dumps(DATA_DIR, data)
     return redirect(url_for("index_page"))
 
-@app.route("/remove", methods=["POST"])
+@app.route("/data", methods=["DELETE"])
 def remove_item():
-    target_item = request.form["title"]
-    target_category = request.form["category"]
-    LogE.g("target item", target_item)
-    LogE.g("target category", target_category)
+    target_item = request.args.get("title")
+    target_category = request.args.get("category")
+    LogE.d("target item", target_item)
+    LogE.d("target category", target_category)
 
     data = jsonE.load(DATA_DIR)
     # remove item from loaded data.
@@ -87,11 +87,44 @@ def remove_item():
     if data[target_category] == {}:
         del data[target_category]
     jsonE.dumps(DATA_DIR, data)
-    return redirect(url_for("index_page"))
+    return jsonify({"message": "Item sucessfully removed"}), 200
 
-@app.route("/modify", methods=["POST"])
+@app.route("/data", methods=["PATCH"])
 def modify_item():
-    target_item = request.form[""]
+    original_target_item = request.form["original_item"]
+    original_target_category = request.form["original_category"]
+    modded_target_item = request.form["modded_item"]
+    modded_target_category = request.form["modded_category"]
+    LogE.g("target item", f"{original_target_item} >> {modded_target_item}")
+    LogE.g("target category", f"{original_target_category} >> {modded_target_category}")
+    
+    data = jsonE.load(DATA_DIR)
+
+    if modded_target_category == "" and modded_target_item == "":
+        return jsonify({"error": "At least one field must be filled in"}), 404
+    elif modded_target_category == "":
+        modded_target_category = original_target_category
+    elif modded_target_item == "":
+        modded_target_item = original_target_item
+    else:
+        pass
+
+    # find original data
+    try:
+        # remove item from loaded data.
+        del data[original_target_category][original_target_item]
+        # if the category is empty, remove that too.
+        if data[original_target_category] == {}:
+            del data[original_target_category]
+        if not modded_target_category in data.keys():
+            data[modded_target_category] = {}
+        data[modded_target_category][modded_target_item] = {"checked": False}
+    except KeyError:
+        return jsonify({"error": "Key error"}), 404
+    
+    jsonE.dumps(DATA_DIR, data)
+    return jsonify({"message": "Modification sucessful"}), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)
