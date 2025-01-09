@@ -74,7 +74,7 @@ header{
 .dialog-fade{
     display: none;
 
-    background-color: #00000050;
+    background-color: #00000094;
 
     position: absolute;
     top: 0px;
@@ -105,7 +105,7 @@ header{
 }
 
 .title-display{
-    padding: 0.8rem 4rem;
+    padding: 0.8rem 1rem;
 
     font-family: Pretendard;
     font-size: 1rem;

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect, jsonify
-from eaxtension import jsonE
-from eaxtension import LogE
+from eaxtension import jsonE, LogE
+
+from signin import check_user_data, filter_string
 
 '''
 [Route description]
@@ -14,13 +15,51 @@ from eaxtension import LogE
 # TODO: 나중에라도 유저 입력 validation test 추가하기
 
 DATA_DIR = r"./static/data/data.json"
+USER_DATA_DIR = r"./static/data/user_data.json"
 
 app = Flask(__name__)
 
+@app.route("/landing", methods=["GET"])
+def landing_page():
+    return render_template(r"landing.html")
+
+@app.route("/login", methods=["GET"])
+def login_page():
+    return render_template(r"login.html")
+
+@app.route("/signup", methods=["POST"])
+def process_signup():
+    user_name = request.form["user_name"]
+    user_id = request.form["user_id"]
+    user_pw = request.form["user_pw"]
+    jsonE.load("./static/data")
+    # TODO: 기능 완성하기
+
+@app.route("/signin", methods=["POST"])
+def process_signin():
+    user_id = request.form["user_id"]
+    user_pw = request.form["user_pw"]
+    user_id = f"{user_id}"
+    user_pw = f"{user_pw}"
+    # TODO: 세션 생성하고 토큰 주기
+    if check_user_data(user_id, user_pw):
+        return redirect(url_for(f"/subjects/{user_id}"))
+
+@app.route("/subjects/<user_id>", methods=["GET"])
+def subjects_page(user_id):
+    user_id = f"{user_id}"
+    # TODO: token 검사(로그인 여부 확인하란 뜻)
+    if filter_string(user_id):
+        return render_template(f"/contents/{user_id}")
+
 @app.route("/", methods=["GET"])
-def index_page():
-    jsonE.load(DATA_DIR)
-    return render_template(r"index.html")
+def redirect_to_landing():
+    # TODO: 로그인 돼있으면 subjects로 리다이렉트
+    return redirect(url_for("landing_page"))
+
+@app.route("/contents/<user_id>", methods=["GET"])
+def contents_page(user_id):
+    return render_template(r"contents.html")
 
 @app.route("/data", methods=["POST"])
 def get_data_from_client():
@@ -45,7 +84,7 @@ def get_data_from_client():
         data[target_category][target_name] = {"checked": False}
 
     jsonE.dumps(DATA_DIR, data)
-    return redirect(url_for("index_page"))
+    return redirect(url_for("contents_page"))
 
 @app.route("/data", methods=["GET"])
 def send_data_to_client():
@@ -71,7 +110,7 @@ def add_page():
         data[add_category][add_item] = {"checked": False}
 
     jsonE.dumps(DATA_DIR, data)
-    return redirect(url_for("index_page"))
+    return redirect(url_for("contents"))
 
 @app.route("/data", methods=["DELETE"])
 def remove_item():

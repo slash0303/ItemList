@@ -48,7 +48,7 @@ class ItemComponent extends HTMLElement{
         checkbox.setAttribute("value", this.getAttribute("title"));
         checkbox.setAttribute("id", `checkbox-${idNum}`);
         let checkImg = document.createElement("img");
-        checkImg.setAttribute("src", "../static/res/checkIcon.svg");
+        checkImg.setAttribute("src", "../static/res/checkIconBold.svg");
         checkImg.setAttribute("id", `checkImg-${idNum}`);
         checkbox.appendChild(checkImg);
 

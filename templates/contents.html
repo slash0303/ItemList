@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
+  <link href="../static/res/checked.png" rel="shortcut icon" type="image/x-icon">
   <title>item list</title>
   <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
@@ -46,8 +47,8 @@
     <!-- add dialog end -->
     <!-- menu dialog start -->
     <div id="menu-dialog-fade" class="dialog-fade" onclick="dialogHandler('menu', 'close')">
-      <div class="dialog-margin-area"></div>
-      <div class="dialog-general-container">
+      <div class="dialog-general-container" style="position: absolute; bottom: 0px; width: 100%;">
+        <div class="dialog-margin-area"></div>
         <div class="center-container">
           <div id="menu-content" class="dialog-content-container title-display"></div>
           <div class="dialog-margin-area"></div>
@@ -65,13 +66,14 @@
             <button id="cancel-button" class="dialog-content-button">Cancel</button>
           </div>
         </div>
+        <div class="dialog-margin-area"></div>
       </div>
     </div>
     <!-- menu dialog end -->
     <!-- modify dialog start -->
     <div id="modify-dialog-fade" class="dialog-fade" onclick="dialogHandler('modify', 'close')">
       <div class="dialog-general-container">
-      <div class="dialog-margin-area"></div>
+      <div class="dialog-position-margin-area"></div>
       <form id="modify-dialog-container" charset="utf-8" action="/data">
         <div class="center-container">
           <div class="dialog-margin-area"></div>

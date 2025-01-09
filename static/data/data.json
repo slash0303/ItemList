@@ -1,26 +1,20 @@
 {
-    "asfeasefas": {
-        "egaseasgsa": {
-            "checked": false
-        }
-    },
     "asefasefas": {
         "asdf": {
             "checked": true
         }
     },
-    "sdfas": {
-        "asefase": {
-            "checked": false
-        }
-    },
-    "asdfa": {
-        "atsetsda": {
-            "checked": false
-        }
-    },
     "ㅁㄴㅇㄹ": {
         "test322": {
+            "checked": false
+        },
+        "asdf": {
+            "checked": false
+        },
+        "ㅁㄴㅇㄹ": {
+            "checked": false
+        },
+        "asefase": {
             "checked": false
         }
     }
