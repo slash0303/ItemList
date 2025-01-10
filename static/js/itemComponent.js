@@ -29,7 +29,7 @@ class ItemComponent extends HTMLElement{
         formContainer.setAttribute("method", "POST");
         formContainer.setAttribute("charset", "utf-8");
         const idNum = this.getAttribute("idnum");
-        formContainer.setAttribute("action", "/data");
+        formContainer.setAttribute("action", `/data/${window.subjectNames}`);
 
         // create button which one act as checkbox
         let checkbox = document.createElement("button");
@@ -48,7 +48,7 @@ class ItemComponent extends HTMLElement{
         checkbox.setAttribute("value", this.getAttribute("title"));
         checkbox.setAttribute("id", `checkbox-${idNum}`);
         let checkImg = document.createElement("img");
-        checkImg.setAttribute("src", "../static/res/checkIconBold.svg");
+        checkImg.setAttribute("src", "../../static/res/checkIconBold.svg");
         checkImg.setAttribute("id", `checkImg-${idNum}`);
         checkbox.appendChild(checkImg);
 
@@ -86,7 +86,7 @@ class ItemComponent extends HTMLElement{
         menuButton.setAttribute("id", `button-${idNum}`);
         
         let menuButtonImg = document.createElement("img");
-        menuButtonImg.setAttribute("src", "../static/res/menuIcon.svg");
+        menuButtonImg.setAttribute("src", "../../static/res/menuIcon.svg");
         menuButton.appendChild(menuButtonImg);
         menuButton.setAttribute("type", "button");
         menuButton.addEventListener("click", (e) => {this.itemMenuPopup(e)});

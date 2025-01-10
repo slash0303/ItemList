@@ -2,7 +2,7 @@ import { dialogHandler } from "./modal.js";
 
 /** Description: get data of item list from server */
 async function fetchData(){
-    const jsonData = fetch("/data").then((data) => {
+    const jsonData = fetch(`/data/${window.subjectName}`).then((data) => {
         return data.json();
     });
     return jsonData;
@@ -64,7 +64,7 @@ async function removeItem(id){
     let formKeys = ["category", "title"];
     let dataElement = document.getElementById(id);
     // Send DELETE request to server.
-    const response = await fetch(createQueryString("/data", formKeys, dataElement), {method: "DELETE"});
+    const response = await fetch(createQueryString(`/data/${window.subjectName}`, formKeys, dataElement), {method: "DELETE"});
     // If the response include the error, end the function and don't remove the item.
     if (!response.ok){
         console.log("fetch error while removing item.", response.status);

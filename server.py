@@ -1,14 +1,11 @@
-from flask import Flask, render_template, request, url_for, redirect, jsonify
+from flask import Flask, make_response, render_template, request, url_for, redirect, jsonify
 from eaxtension import jsonE, LogE
+import time
 
-from signin import check_user_data, filter_string
+from signin import *
 
 '''
 [Route description]
-/ : main page of web site.
-/data : request data 
-/add : add data
-/remove : remove data
 ...설명 보충해라
 '''
 
@@ -16,6 +13,7 @@ from signin import check_user_data, filter_string
 
 DATA_DIR = r"./static/data/data.json"
 USER_DATA_DIR = r"./static/data/user_data.json"
+SESSION_STORAGE_DIR = r"./static/data/session_storage.json"
 
 app = Flask(__name__)
 
@@ -23,46 +21,137 @@ app = Flask(__name__)
 def landing_page():
     return render_template(r"landing.html")
 
+@app.route("/", methods=["GET"])
+def redirect_to_landing():
+    # TODO: 로그인 돼있으면 subjects로 리다이렉트
+    return redirect(url_for("landing_page"))
+
 @app.route("/login", methods=["GET"])
 def login_page():
     return render_template(r"login.html")
 
 @app.route("/signup", methods=["POST"])
 def process_signup():
+    # Get account data from user's request.
     user_name = request.form["user_name"]
     user_id = request.form["user_id"]
     user_pw = request.form["user_pw"]
-    jsonE.load("./static/data")
-    # TODO: 기능 완성하기
+    
+    user_data = jsonE.load(USER_DATA_DIR)
+    # filter ID duplication.
+    if user_id in user_data.keys():
+        return jsonify({"error": "ID already exists."}), 409
+    else:
+        pass
+    # filter user's input to prevent injection attack.
+    if not filter_string_list(user_name, user_id, user_pw):
+        return jsonify({"error": "user_text_doesn't match in codition."}), 409
+    else:
+        pass
+    # add account.
+    user_data[user_id] = {"user_name": user_name, 
+                          "user_pw": user_pw}
+    jsonE.dumps(USER_DATA_DIR, user_data)
+    # Create new file to store user's data.
+    jsonE.dumps(f"./static/data/users/{user_id}.json", {})
+    return redirect(url_for("landing_page"))
 
 @app.route("/signin", methods=["POST"])
 def process_signin():
+    user_device_id = request.form["device_id"]
     user_id = request.form["user_id"]
     user_pw = request.form["user_pw"]
-    user_id = f"{user_id}"
-    user_pw = f"{user_pw}"
-    # TODO: 세션 생성하고 토큰 주기
-    if check_user_data(user_id, user_pw):
-        return redirect(url_for(f"/subjects/{user_id}"))
+
+    hashed_device_id = str(md5(user_device_id.encode()).hexdigest())
+
+    # Filter user's input
+    if not filter_string_list(user_id, user_pw) and not test_device_id_validation(user_device_id):
+        return jsonify({"error": "validate input"}), 409
+    # Load session_storage and user_data
+    session_storage = jsonE.load(SESSION_STORAGE_DIR)
+    user_data = jsonE.load(USER_DATA_DIR)
+    # Check ID and PW
+    if not (user_id in user_data.keys()):
+        return jsonify({"error", "ID doesn't exist."}), 404
+    if user_data[user_id]["user_pw"] != user_pw:
+        return jsonify({"error": "PW doesn't match."}), 400
+    # Create cookie and set expiration time
+    cookie_value = create_cookie_value(user_id, user_pw)
+    expiration_time = set_expiration_time(1,0,0)
+    # Create response and set cookie
+    resp = make_response(redirect(f"subjects/{user_id}"))
+    resp.set_cookie("user_id", user_id)
+    resp.set_cookie("device_id", hashed_device_id)
+    resp.set_cookie("value", cookie_value)
+    resp.set_cookie("expiration_time", str(expiration_time))
+    # Store in session storage
+    session_storage[hashed_device_id] = {
+        user_id:{
+            "cookie_value": cookie_value,
+            "expiration_time": expiration_time
+        }
+    }
+    jsonE.dumps(SESSION_STORAGE_DIR, session_storage)
+    return resp
 
 @app.route("/subjects/<user_id>", methods=["GET"])
 def subjects_page(user_id):
-    user_id = f"{user_id}"
-    # TODO: token 검사(로그인 여부 확인하란 뜻)
-    if filter_string(user_id):
-        return render_template(f"/contents/{user_id}")
+    session_storage = jsonE.load(SESSION_STORAGE_DIR)
+    
+    cookie = request.cookies
+    cookie_key_list = ["user_id", "device_id", "expiration_time"]
+    for cookie_key in cookie_key_list:
+        if not (cookie_key in cookie.keys()):
+            LogE.d("wtf", cookie_key)
+            return jsonify({"error": "rotten cookie"}), 401
 
-@app.route("/", methods=["GET"])
-def redirect_to_landing():
-    # TODO: 로그인 돼있으면 subjects로 리다이렉트
-    return redirect(url_for("landing_page"))
+    if user_id != cookie["user_id"]:
+        LogE.e("error", "siteid")
+        return jsonify({"error": "you don't have a permission to access this content."}), 401
+    if not cookie["device_id"] in session_storage.keys():
+        LogE.e("error", cookie["device_id"])
+        return jsonify({"error": "you don't have a permission to access this content."}), 401
+    if not cookie["user_id"] in session_storage[cookie["device_id"]].keys():
+        LogE.e("error", "userid")
+        return jsonify({"error": "you don't have a permission to access this content."}), 401
+    if check_time_unexpired(int(cookie["expiration_time"])):
+        remove_session(cookie["device_id"], user_id)
+        LogE.e("error", "exptime")
+        return jsonify({"error": "session expired."})
+    else:
+        # return render_template("subjects.html") 아직 미완성이라 바로 contents로
+        return redirect(f"/contents/def/{user_id}")
 
-@app.route("/contents/<user_id>", methods=["GET"])
-def contents_page(user_id):
-    return render_template(r"contents.html")
+@app.route("/contents/<subject_name>/<user_id>", methods=["GET"])
+def contents_page(subject_name, user_id):
+    session_storage = jsonE.load(SESSION_STORAGE_DIR)
+    cookie = request.cookies
+    cookie_key_list = ["user_id", "device_id", "expiration_time"]
+    for cookie_key in cookie_key_list:
+        if not (cookie_key in cookie.keys()):
+            LogE.d("wtf", cookie_key)
+            return jsonify({"error": "rotten cookie"}), 401
 
-@app.route("/data", methods=["POST"])
-def get_data_from_client():
+    if user_id != cookie["user_id"]:
+        LogE.e("error", "siteid")
+        return jsonify({"error": "you don't have a permission to access this content."}), 401
+    if not cookie["device_id"] in session_storage.keys():
+        LogE.e("error", cookie["device_id"])
+        return jsonify({"error": "you don't have a permission to access this content."}), 401
+    if not cookie["user_id"] in session_storage[cookie["device_id"]].keys():
+        LogE.e("error", "userid")
+        return jsonify({"error": "you don't have a permission to access this content."}), 401
+    if check_time_unexpired(int(cookie["expiration_time"])):
+        remove_session(cookie["device_id"], user_id)
+        LogE.e("error", "exptime")
+        return jsonify({"error": "session expired."})
+    else:
+        return render_template(r"contents.html")
+
+@app.route("/data/<subject_name>", methods=["POST"])
+def get_data_from_client(subject_name):
+    user_id = request.cookies.get("user_id")
+    DATA_DIR = f"./static/data/users/{user_id}.json"
     # get data of checked target from 'POST' request.
     target_category = request.form["category"]
     LogE.g("category", target_category)
@@ -86,50 +175,62 @@ def get_data_from_client():
     jsonE.dumps(DATA_DIR, data)
     return redirect(url_for("contents_page"))
 
-@app.route("/data", methods=["GET"])
-def send_data_to_client():
-    data = jsonE.load(DATA_DIR)
-    return data
+@app.route("/data/<subject_name>", methods=["GET"])
+def send_data_to_client(subject_name):
+    user_id = request.cookies.get("user_id")
+    DATA_DIR = f"./static/data/users/{user_id}.json"
+    subject_data = jsonE.load(DATA_DIR)[subject_name]
+    return subject_data
 
-@app.route("/add", methods=["POST"])
-def add_page():
+@app.route("/add/<subject_name>", methods=["POST"])
+def add_page(subject_name):
+    user_id = request.cookies.get("user_id")
+    DATA_DIR = f"./static/data/users/{user_id}.json"
     add_category = request.form["add_category"]
     add_item = request.form["add_item"]
     data = jsonE.load(DATA_DIR) 
+    subject_data = data[subject_name]
     
     # modify item if it had already exist.
-    if add_category in data.keys():
-        if add_item in data[add_category].keys():
+    if add_category in subject_data.keys():
+        if add_item in subject_data[add_category].keys():
             # change state
             pass
         else:
-            data[add_category][add_item] = {"checked": False}
+            subject_data[add_category][add_item] = {"checked": False}
     # create new category and item
     else:
-        data[add_category] = {}
-        data[add_category][add_item] = {"checked": False}
+        subject_data[add_category] = {}
+        subject_data[add_category][add_item] = {"checked": False}
 
+    data[subject_name] = subject_data
     jsonE.dumps(DATA_DIR, data)
-    return redirect(url_for("contents"))
+    return redirect(f"/contents/{subject_name}/{user_id}")
 
-@app.route("/data", methods=["DELETE"])
-def remove_item():
+@app.route("/data/<subject_name>", methods=["DELETE"])
+def remove_item(subject_name):
+    user_id = request.cookies.get("user_id")
+    DATA_DIR = f"./static/data/users/{user_id}.json"
     target_item = request.args.get("title")
     target_category = request.args.get("category")
     LogE.d("target item", target_item)
     LogE.d("target category", target_category)
 
     data = jsonE.load(DATA_DIR)
+    subject_data = data[subject_name]
     # remove item from loaded data.
-    del data[target_category][target_item]
+    del subject_data[target_category][target_item]
     # if the category is empty, remove that too.
-    if data[target_category] == {}:
-        del data[target_category]
+    if subject_data[target_category] == {}:
+        del subject_data[target_category]
+    data[subject_data] = subject_data
     jsonE.dumps(DATA_DIR, data)
     return jsonify({"message": "Item sucessfully removed"}), 200
 
-@app.route("/data", methods=["PATCH"])
-def modify_item():
+@app.route("/data/<subject_name>", methods=["PATCH"])
+def modify_item(subject_name):
+    user_id = request.cookies.get("user_id")
+    DATA_DIR = f"./static/data/users/{user_id}.json"
     original_target_item = request.form["original_item"]
     original_target_category = request.form["original_category"]
     modded_target_item = request.form["modded_item"]
@@ -138,6 +239,7 @@ def modify_item():
     LogE.g("target category", f"{original_target_category} >> {modded_target_category}")
     
     data = jsonE.load(DATA_DIR)
+    subject_data = data[subject_name]
 
     if modded_target_category == "" and modded_target_item == "":
         return jsonify({"error": "At least one field must be filled in"}), 404
@@ -151,16 +253,17 @@ def modify_item():
     # find original data
     try:
         # remove item from loaded data.
-        del data[original_target_category][original_target_item]
+        del subject_data[original_target_category][original_target_item]
         # if the category is empty, remove that too.
-        if data[original_target_category] == {}:
-            del data[original_target_category]
+        if subject_data[original_target_category] == {}:
+            del subject_data[original_target_category]
         if not modded_target_category in data.keys():
-            data[modded_target_category] = {}
-        data[modded_target_category][modded_target_item] = {"checked": False}
+            subject_data[modded_target_category] = {}
+        subject_data[modded_target_category][modded_target_item] = {"checked": False}
     except KeyError:
         return jsonify({"error": "Key error"}), 404
     
+    data[subject_name] = subject_data
     jsonE.dumps(DATA_DIR, data)
     return jsonify({"message": "Modification sucessful"}), 200
 

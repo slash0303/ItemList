@@ -19,3 +19,11 @@ else{
     hideElement(signupForm);
     hideElement(signinForm);
 }
+
+let deviceIdElements = document.querySelectorAll(".device-id");
+deviceIdElements.forEach((deviceIdElement) => {
+    let deviceId = `${navigator.userAgent}-${Date()}`;
+    deviceIdElement.value = deviceId;
+    console.log(deviceIdElement);
+    console.log(deviceId);
+});

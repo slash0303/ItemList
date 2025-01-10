@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <link href="../static/res/checked.png" rel="shortcut icon" type="image/x-icon">
+  <link href="../../static/res/checked.png" rel="shortcut icon" type="image/x-icon">
   <title>item list</title>
-  <link href="../static/css/style.css" rel="stylesheet" type="text/css" />
+  <link href="../../static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
   <header style="position: sticky; top: 0;">
     <div class="header-container">
       <button id="header-backarrow-button" class="header-backarrow-button">
-        <img src="../static/res/backArrowIcon.svg">
+        <img src="../../static/res/backArrowIcon.svg">
       </button>
       <h1 id="item-general-title" class="header-general-title">title</h1>
     </div>
@@ -23,7 +23,7 @@
     <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
       <div class="dialog-position-margin-area"></div>
       <div class="center-container">
-        <form method="POST" charset="utf-8" action="/add">
+        <form id="add-form" method="POST" charset="utf-8" action="/add/">
           <div id="add-dialog-bg" class="dialog-content-container">
             <div class="center-container">
               <div class="dialog-content-margin-area"></div>
@@ -37,7 +37,7 @@
             </div>
           </div>
           <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
-            <button class="dialog-content-button">Cancel</button>
+            <button class="dialog-content-button" onclick="dialogHandler('add', 'close')">Cancel</button>
             <div class="dialog-line-vertical"></div>
             <button id="add-apply-button" type="submit" class="dialog-content-button apply-button">Apply</button>
           </div>
@@ -106,6 +106,6 @@
     </form>
     <!-- item list end -->
   </main>
-  <script type="module" src="../static/js/script.js"></script>
+  <script type="module" src="../../static/js/script.js"></script>
 </body>
 </html>

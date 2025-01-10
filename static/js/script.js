@@ -8,6 +8,18 @@ import { fetchData, renderItems, removeItem } from "./renderData.js";
 window.dialogHandler = dialogHandler;
 window.removeItem = removeItem;   
 
+// Get subject name from location.
+window.subjectName = window.location.pathname.split("/")[2]; 
+
+// Change title of page
+let titleElement = document.getElementById("item-general-title");
+titleElement.innerHTML = window.subjectName;
+
+document.title = `${window.subjectName} - item list`
+
+// Change action route of add form.
+let addFormElement = document.getElementById("add-form");
+addFormElement.action = `/add/${subjectName}`;
 
 // Track the element which clicked by user.
 let focusedElement = new FocusedElement();
@@ -45,7 +57,7 @@ fetchData().then((data)=>{
       formBody.append("title", itemComponent.getAttribute("title"));
       formBody.append("state", itemComponent.getAttribute("state"));
       // send POST request.
-      fetch("/data", 
+      fetch(`/data/${window.subjectName}`, 
         {
           method: "POST",
           body: formBody
@@ -96,7 +108,7 @@ modifyDialogContainer.addEventListener("submit", async (e) => {
   formBody.append("original_item", originalItem.value);
   formBody.append("original_category", originalCategory.value);
 
-  const response = await fetch("/data", 
+  const response = await fetch(`/data/${window.subjectName}`, 
     {
       method: "PATCH",
       body: formBody

@@ -1,20 +1,27 @@
 {
-    "asefasefas": {
-        "asdf": {
+    "캐리어": {
+        "옷": {
             "checked": true
+        },
+        "바지": {
+            "checked": false
         }
     },
-    "ㅁㄴㅇㄹ": {
-        "test322": {
+    "가방": {
+        "여권": {
+            "checked": false
+        }
+    },
+    "살거": {
+        "제니쿠키 11번": {
             "checked": false
         },
+        "제니쿠키 8번": {
+            "checked": false
+        }
+    },
+    "asdf": {
         "asdf": {
-            "checked": false
-        },
-        "ㅁㄴㅇㄹ": {
-            "checked": false
-        },
-        "asefase": {
             "checked": false
         }
     }
