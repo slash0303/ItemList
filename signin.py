@@ -51,7 +51,8 @@ def check_time_unexpired(expiration_time: int) -> bool:
     else:
         return True
     
-def remove_session(device_id: str, user_id: str):
+def remove_session(device_id: str):
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
     del session_storage[device_id]
     jsonE.dumps(SESSION_STORAGE_DIR, session_storage)
+

@@ -115,12 +115,16 @@ def subjects_page(user_id):
         LogE.e("error", "userid")
         return jsonify({"error": "you don't have a permission to access this content."}), 401
     if check_time_unexpired(int(cookie["expiration_time"])):
-        remove_session(cookie["device_id"], user_id)
+        remove_session(cookie["device_id"])
         LogE.e("error", "exptime")
         return jsonify({"error": "session expired."})
     else:
         # return render_template("subjects.html") 아직 미완성이라 바로 contents로
         return redirect(f"/contents/def/{user_id}")
+
+@app.route("/test")
+def test():
+    return render_template("subjects.html")
 
 @app.route("/contents/<subject_name>/<user_id>", methods=["GET"])
 def contents_page(subject_name, user_id):
@@ -142,14 +146,21 @@ def contents_page(subject_name, user_id):
         LogE.e("error", "userid")
         return jsonify({"error": "you don't have a permission to access this content."}), 401
     if check_time_unexpired(int(cookie["expiration_time"])):
-        remove_session(cookie["device_id"], user_id)
+        remove_session(cookie["device_id"])
         LogE.e("error", "exptime")
         return jsonify({"error": "session expired."})
     else:
         return render_template(r"contents.html")
+    
+@app.route("/data/subject/<user_id>", methods=["GET"])
+def send_subject_data_to_client(user_id):
+    # TODO: 쿠키 검사
+    DATA_DIR = f"./static/data/users/{user_id}.json"
+    data = jsonE.load(DATA_DIR)
+    return data
 
 @app.route("/data/<subject_name>", methods=["POST"])
-def get_data_from_client(subject_name):
+def get_content_data_from_client(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
     # get data of checked target from 'POST' request.
@@ -176,7 +187,7 @@ def get_data_from_client(subject_name):
     return redirect(url_for("contents_page"))
 
 @app.route("/data/<subject_name>", methods=["GET"])
-def send_data_to_client(subject_name):
+def send_content_data_to_client(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
     subject_data = jsonE.load(DATA_DIR)[subject_name]

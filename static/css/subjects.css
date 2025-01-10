@@ -1,0 +1,155 @@
+html, body{
+    margin: 0px;
+    padding: 0px;
+
+    font-family: Pretendard;
+}
+
+button{
+    outline: none;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    
+    background-color: #00000000;
+}
+
+body{
+    background-color: #f6f6f6;
+}
+
+header{
+    position: sticky;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0.5rem 1rem 0.5rem 1rem;
+
+    background-color: white;
+}
+
+#header-logo-img{
+    width: 1.2rem;
+    height: 1.2rem;
+
+    margin-right: 0.4rem;
+}
+
+.title-area{
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+}
+
+.app-title{
+    font-family: Pretendard;
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+.add-button{
+    border: none;
+    border-radius: 0.3rem;
+    padding: 0.5rem 1rem;
+
+    background-color: #3dc132;
+    color: white;
+
+    font-weight: 500;
+    font-size: 1rem;
+    font-family: Pretendard;
+}
+
+.item-container{
+    padding: 1rem 1rem;
+}
+
+.subject-container{
+    display: flex;
+    flex-direction: column;
+
+    padding: 1rem;
+    margin: 0.5rem 0rem;
+
+    border-radius: 0.6rem;
+    
+    background-color: #ffffff;
+}
+
+.title-line-container{
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.2rem 0rem;
+    padding: 0rem 0.2rem;
+}
+
+.title-container{
+    display: flex;
+    flex-direction: row;
+
+    align-items: flex-end;
+}
+
+.subject-title-text{
+    font-weight: bold;
+    font-family: Pretendard;
+    font-size: 2rem;
+}
+
+.subject-date-text{
+    font-family: Pretendard;
+    font-size: 0.8rem;
+    color: #ababab;
+    margin-left: 0.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.subject-menu-button-img{
+    height: 1rem;
+}
+
+.subject-description-text{
+    font-family: Pretendard;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #707070;
+    
+    padding: 0rem 0.2rem;
+}
+
+.subject-divide-line{
+    border-color: #D3D3D3;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 1rem;
+
+    margin: 0.5rem 0rem;
+}
+
+.bottom-line-container{
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0rem 0.2rem;
+}
+
+.item-preview-text{
+    color: #959595;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.process-counter-text{
+    color: #959595;
+    font-weight: 500;
+    font-size: 1rem;
+}

@@ -1,7 +1,12 @@
 {
-    "categoryName":{
-        "itemName":{
-            "checked": true
+    "subject_name":{
+        "subject_description": "description text",
+        "subject_date": "subject_date(int)",
+        "subject_process": "subject_process_text",
+        "category_name":{
+            "item_name":{
+                "checked": true
+            }
         }
     }
 }

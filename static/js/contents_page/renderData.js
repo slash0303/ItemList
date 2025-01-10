@@ -5,7 +5,6 @@ async function fetchData(){
     const jsonData = fetch(`/data/${window.subjectName}`).then((data) => {
         return data.json();
     });
-    return jsonData;
 }
 
 /** Description: render items which included by category in category container. */
