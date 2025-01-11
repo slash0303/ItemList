@@ -130,34 +130,52 @@ def test():
 def contents_page(subject_name, user_id):
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
     cookie = request.cookies
-    cookie_key_list = ["user_id", "device_id", "expiration_time"]
-    for cookie_key in cookie_key_list:
-        if not (cookie_key in cookie.keys()):
-            LogE.d("wtf", cookie_key)
-            return jsonify({"error": "rotten cookie"}), 401
-
+    # Check user id from cookie and URL
     if user_id != cookie["user_id"]:
-        LogE.e("error", "siteid")
-        return jsonify({"error": "you don't have a permission to access this content."}), 401
-    if not cookie["device_id"] in session_storage.keys():
-        LogE.e("error", cookie["device_id"])
-        return jsonify({"error": "you don't have a permission to access this content."}), 401
-    if not cookie["user_id"] in session_storage[cookie["device_id"]].keys():
-        LogE.e("error", "userid")
-        return jsonify({"error": "you don't have a permission to access this content."}), 401
+        return redirect("/")
+
+    # verificate user's cookie.
+    cookie_key_list = ["user_id", "device_id"]
+    verifiaction_value_list = {"user_id": session_storage[cookie["device_id"]],
+                               "device_id": session_storage.keys()}
+    response_code = check_cookie(cookie_key_list, cookie, verifiaction_value_list)
+    # Create response
+    if response_code == 401:
+        return redirect("/")
+        # return jsonify({"error": "you don't have a permission to access this content."}), response_code
+    elif response_code == 500:
+        return redirect("/")
+        # return jsonify({"error": "internal server error."})
+    elif response_code == 200:
+        return render_template(r"contents.html")
+
     if check_time_unexpired(int(cookie["expiration_time"])):
         remove_session(cookie["device_id"])
         LogE.e("error", "exptime")
-        return jsonify({"error": "session expired."})
+        return redirect("/")
+        # return jsonify({"error": "session expired."})
     else:
         return render_template(r"contents.html")
     
 @app.route("/data/subject/<user_id>", methods=["GET"])
 def send_subject_data_to_client(user_id):
-    # TODO: 쿠키 검사
-    DATA_DIR = f"./static/data/users/{user_id}.json"
-    data = jsonE.load(DATA_DIR)
-    return data
+    session_storage = jsonE.load(SESSION_STORAGE_DIR);
+    cookie_key_list = ["user_id", "device_id"]
+    verification_value_list = {"user_id", session_storage[cookie["device_id"]],
+                               "device_id", session_storage.keys()}
+    cookie = request.cookies
+    response_code = check_cookie(cookie_key_list, cookie, verification_value_list)
+    # Create response
+    if response_code == 401:
+        return redirect("/")
+        # return jsonify({"error": "you don't have a permission to access this content."}), response_code
+    elif response_code == 500:
+        return redirect("/")
+        # return jsonify({"error": "internal server error."})
+    elif response_code == 200:    
+        DATA_DIR = f"./static/data/users/{user_id}.json"
+        data = jsonE.load(DATA_DIR)
+        return data
 
 @app.route("/data/<subject_name>", methods=["POST"])
 def get_content_data_from_client(subject_name):
@@ -191,6 +209,7 @@ def send_content_data_to_client(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
     subject_data = jsonE.load(DATA_DIR)[subject_name]
+    LogE.d("response", subject_data)
     return subject_data
 
 @app.route("/add/<subject_name>", methods=["POST"])

@@ -56,3 +56,27 @@ def remove_session(device_id: str):
     del session_storage[device_id]
     jsonE.dumps(SESSION_STORAGE_DIR, session_storage)
 
+
+def check_cookie(cookie_keys: list, user_cookie, verification_value: dict) -> int:
+    if len(cookie_keys) != len(verification_value):
+        LogE.e("Number of elements", "length cookie keys and verfication value doesn't match.")
+        return 500
+    
+    
+    for cookie_key in cookie_keys:
+        if not cookie_key in user_cookie.keys():
+            LogE.e("Rotten cookie", f"user cookie doesn't have '{cookie_key}'.")
+            return 401
+        if (type(verification_value[cookie_key]) == list) or (type(verification_value[cookie_key]) == type({}.keys())):
+            if not user_cookie[cookie_key] in verification_value[cookie_key]:
+                LogE.e("Cookie value(list or dict_keys)", f"'{cookie_key}' doesn't match with verification value.")
+                return 401
+        elif type(verification_value[cookie_key]) == dict:
+            if not user_cookie[cookie_key] in verification_value[cookie_key].keys():
+                LogE.e("Cookie value(dict)", f"'{cookie_key}' doesn't match with verification value.")
+                return 401
+        else:
+            if user_cookie[cookie_key] != verification_value[cookie_key]:
+                LogE.e("Cookie value", f"'{cookie_key}' doesn't match with verification value.")
+                return 401
+    return 200
