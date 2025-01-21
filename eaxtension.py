@@ -2,13 +2,12 @@ import time
 import json
 
 def version():
-	version = "1.0.0"
-	last_edit = "add merge allY"
+	version = "1.1.0"
+	last_edit = "modify silent mode. now silent mode is default."
 	print(f"version: {version}. last edit: '{last_edit}'")
 
 # Log Class
 class LogE:
-	
 	tim = time.localtime(time.time())
 	time_format = "%Y-%m-%d %H:%M:%S"
 	Log_time = str(time.strftime(time_format, tim))
@@ -20,6 +19,15 @@ class LogE:
 		time_format = "%Y-%m-%d %H:%M:%S"
 		Log_time = str(time.strftime(time_format, tim))
 		print(f"{Log_time} | {Log_name} : {Log_text}")
+
+	# text green
+	@staticmethod
+	def g(Log_name, Log_text):
+		tim = time.localtime(time.time())
+		time_format = "%Y-%m-%d %H:%M:%S"
+		Log_time = str(time.strftime(time_format, tim))
+		text_green = "\033[32m"
+		print(text_green + f"{Log_time} | {Log_name} : {Log_text}" + "\033[0m")
 	
 	# text red (Error Log)
 	@staticmethod
@@ -30,15 +38,6 @@ class LogE:
 		text_red = "\033[31m"
 		print(text_red + f"{Log_time} | [Error] {Log_name} : {Log_text}" + "\033[0m")
 
-	# text green
-	@staticmethod
-	def g(Log_name, Log_text):
-		tim = time.localtime(time.time())
-		time_format = "%Y-%m-%d %H:%M:%S"
-		Log_time = str(time.strftime(time_format, tim))
-		text_green = "\033[32m"
-		print(text_green + f"{Log_time} | {Log_name} : {Log_text}" + "\033[0m")
-		
 	# bg red (Error log)
 	@staticmethod
 	def E(Log_name, Log_text):
@@ -65,7 +64,6 @@ class LogE:
 		
 # json Class
 class jsonE:
-	
 	#json dumps
 	@staticmethod
 	def dumps(file_name: str, content:dict, **attr):
@@ -78,13 +76,13 @@ class jsonE:
 		with open(file_name, "w", encoding="utf-8") as json_file:
 			json.dump(content, json_file, ensure_ascii=False, indent=4)
 
-		try:
-			if attr["silent"] != True:
-				LogE.g("dumps json", f"'{file_name}' is dumped")
-		except KeyError:
+		if "silent" in attr.keys():
+			if not attr["silent"]:
+				LogE.g("dump json", f"'{file_name}' is dumped")
+			else:
+				pass
+		else:
 			pass
-		except Exception as e:
-			LogE.e(e, "Location of occurance is 'jsonE.dumps()'")
 	
 	#json load
 	@staticmethod
@@ -94,15 +92,15 @@ class jsonE:
 			pass
 		else:
 			file_name = file_name + ".json"
-		try:
-			if attr["silent"] != True:
+		if "silent" in attr.keys():
+			if not attr["silent"]:
 				LogE.g("load json", f"'{file_name}' is loaded")
-		except KeyError:
+			else:
+				pass
+		else:
 			pass
-		except Exception as e:
-			LogE.e(e, "Location of occurance is 'jsonE.dumps()'")
 
-		with open(file_name, "r", encoding="utf-8") as json_file:
+		with open(file_name, "r") as json_file:
 			content = json.load(json_file)
 			return content
 
@@ -116,21 +114,22 @@ class jsonE:
 			file_name = file_name + ".json"
 
 		with open(file_name, "r") as json_file:
+
 			try:
 				json_data = json.load(json_file)
+				LogE.g("merge json", f"'{file_name}' is dumped by content.")
 			except json.JSONDecodeError:
-				LogE.e("error(JSONDecodeError)", f"'{file_name}' has problem. please re-dump '{file_name}'.")
+				LogE.e("'JSONDecodeError' in 'jsonE.merge'", f"'{file_name}' has problem. please re-dump '{file_name}'.")
+				return None
+
 			content_keys = content.keys()
 			try:
 				if attr["allY"] == True:
 					for key in content_keys:
 						json_data[key] = content[key]
-						LogE.g("merge json", f"'{file_name}' is dumped/merged by content.")
-				else:
-					pass
+					else:
+						raise KeyError
 			except KeyError:
-				pass
-			finally:
 				for key in content_keys:
 					try:
 						if json_data[key] == None:
@@ -147,6 +146,7 @@ class jsonE:
 								LogE.g("merge json", "content doesn't changed.")
 					except KeyError:
 						json_data[key] = content[key]
+
 					with open(file_name, "w", encoding="utf-8") as json_file:
 						json.dump(json_data, json_file, ensure_ascii=False, indent=4)
 
@@ -179,6 +179,10 @@ class timeE:
 
 			LogE.t("text", form)
 
-			output = str(time.strftime(form, tim))
+			output = str(time.strftime(form, tim))\
 
 			return output
+	
+if __name__ == "__main__":
+	jsonE.load("./test.json", silent=False)
+	jsonE.dumps("./test.json", {})
