@@ -1,5 +1,6 @@
 import { SubjectItemComponent, createSubjectComponent } from "./subjectItemComponent.js";
 
+/** Description: getCookie from browser. */
 function getCookie(name) {
     let matches = document.cookie.match(new RegExp(
       "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -7,20 +8,23 @@ function getCookie(name) {
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-let userId = getCookie("userID");
+// Get the id of user.
+let userId = getCookie("user_id");
 
-fetch(`/data/subject/${userId}`).then((data)=>{
-        return data.json();
-    }).then((jsonData)=>{
-        let subject_names = Object.keys(jsonData);
-        subject_names.forEach((subject_name)=>{
-            let date = jsonData["subject_date"];
-            let description = jsonData["subject_description"];
-            // let preview = Object.keys(data["category_name"]).slice(0, 3);
-            let counter = jsonData["subject_process"];
-            createSubjectComponent(subject_name, date, description, "nah", counter);
-            return;
-        });
+// Send request to server to get subject datas.
+fetch(`/data/subjects/${userId}`).then((data)=>{
+    return data.json();
+}).then((jsonData)=>{
+    let subject_names = Object.keys(jsonData);
+    // Create subject elements in user's viewport.
+    subject_names.forEach((subject_name)=>{
+        let date = jsonData["subject_date"];
+        let description = jsonData["subject_description"];
+        // let preview = Object.keys(data["category_name"]).slice(0, 3);
+        let counter = jsonData["subject_process"];
+        createSubjectComponent(subject_name, date, description, "nah", counter);
+        return;
+    });
 });
 
 let itemContainer = document.getElementById("item-container");

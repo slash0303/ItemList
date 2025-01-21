@@ -11,25 +11,31 @@ from signin import *
 
 # TODO: 나중에라도 유저 입력 validation test 추가하기
 
+# Internal directories.
 DATA_DIR = r"./static/data/data.json"
 USER_DATA_DIR = r"./static/data/user_data.json"
 SESSION_STORAGE_DIR = r"./static/data/session_storage.json"
 
+# Create Flask instance.
 app = Flask(__name__)
 
+# Landing page
 @app.route("/landing", methods=["GET"])
 def landing_page():
     return render_template(r"landing.html")
 
+# Redirect to landing. modify required.
 @app.route("/", methods=["GET"])
 def redirect_to_landing():
     # TODO: 로그인 돼있으면 subjects로 리다이렉트
     return redirect(url_for("landing_page"))
 
+# Login page.
 @app.route("/login", methods=["GET"])
 def login_page():
     return render_template(r"login.html")
 
+# Process 'sign up' request.
 @app.route("/signup", methods=["POST"])
 def process_signup():
     # Get account data from user's request.
@@ -56,8 +62,10 @@ def process_signup():
     jsonE.dumps(f"./static/data/users/{user_id}.json", {})
     return redirect(url_for("landing_page"))
 
+# Process 'sign in' request.
 @app.route("/signin", methods=["POST"])
 def process_signin():
+    # Get user identification data from cookie.
     user_device_id = request.form["device_id"]
     user_id = request.form["user_id"]
     user_pw = request.form["user_pw"]
@@ -91,36 +99,43 @@ def process_signin():
             "expiration_time": expiration_time
         }
     }
+    # save session data in session storage.
     jsonE.dumps(SESSION_STORAGE_DIR, session_storage)
     return resp
 
+# Return subject data.
 @app.route("/subjects/<user_id>", methods=["GET"])
 def subjects_page(user_id):
+    # Load validation of session.
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
     
+    # Get user data from cookie.
     cookie = request.cookies
-    cookie_key_list = ["user_id", "device_id", "expiration_time"]
+    # Check list from cookie.
+    cookie_key_list = ["user_id", "device_id"]
+    # Check cookie has keys which declared in key_list.
     for cookie_key in cookie_key_list:
         if not (cookie_key in cookie.keys()):
             LogE.d("wtf", cookie_key)
             return jsonify({"error": "rotten cookie"}), 401
+    verification_value = {"user_id": session_storage[cookie["device_id"]],
+                          "device_id": session_storage.keys()}
 
+
+    response_code = check_cookie(cookie_key_list, cookie, verification_value)
+    check_time_unexpired(int(cookie["expiration_time"]))
     if user_id != cookie["user_id"]:
         LogE.e("error", "siteid")
         return jsonify({"error": "you don't have a permission to access this content."}), 401
-    if not cookie["device_id"] in session_storage.keys():
-        LogE.e("error", cookie["device_id"])
-        return jsonify({"error": "you don't have a permission to access this content."}), 401
-    if not cookie["user_id"] in session_storage[cookie["device_id"]].keys():
-        LogE.e("error", "userid")
-        return jsonify({"error": "you don't have a permission to access this content."}), 401
-    if check_time_unexpired(int(cookie["expiration_time"])):
-        remove_session(cookie["device_id"])
-        LogE.e("error", "exptime")
-        return jsonify({"error": "session expired."})
-    else:
+    if response_code == 401:
+        return redirect("/")
+        # return jsonify({"error": "you don't have a permission to access this content."}), response_code
+    elif response_code == 500:
+        return redirect("/")
+        # return jsonify({"error": "internal server error."})
+    elif response_code == 200:
         # return render_template("subjects.html") 아직 미완성이라 바로 contents로
-        return redirect(f"/contents/def/{user_id}")
+        return render_template("subjects.html")
 
 @app.route("/test")
 def test():
@@ -155,15 +170,15 @@ def contents_page(subject_name, user_id):
         return redirect("/")
         # return jsonify({"error": "session expired."})
     else:
-        return render_template(r"contents.html")
+        return redirect(f"content/def/{user_id}")
     
-@app.route("/data/subject/<user_id>", methods=["GET"])
+@app.route("/data/subjects/<user_id>", methods=["GET"])
 def send_subject_data_to_client(user_id):
     session_storage = jsonE.load(SESSION_STORAGE_DIR);
     cookie_key_list = ["user_id", "device_id"]
-    verification_value_list = {"user_id", session_storage[cookie["device_id"]],
-                               "device_id", session_storage.keys()}
     cookie = request.cookies
+    verification_value_list = {"user_id": session_storage[cookie["device_id"]],
+                               "device_id": session_storage.keys()}
     response_code = check_cookie(cookie_key_list, cookie, verification_value_list)
     # Create response
     if response_code == 401:
@@ -172,7 +187,7 @@ def send_subject_data_to_client(user_id):
     elif response_code == 500:
         return redirect("/")
         # return jsonify({"error": "internal server error."})
-    elif response_code == 200:    
+    elif response_code == 200:
         DATA_DIR = f"./static/data/users/{user_id}.json"
         data = jsonE.load(DATA_DIR)
         return data

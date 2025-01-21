@@ -100,7 +100,7 @@ class jsonE:
 		else:
 			pass
 
-		with open(file_name, "r") as json_file:
+		with open(file_name, "r", encoding="utf-8") as json_file:
 			content = json.load(json_file)
 			return content
 

@@ -5,6 +5,7 @@ async function fetchData(){
     const jsonData = fetch(`/data/${window.subjectName}`).then((data) => {
         return data.json();
     });
+    return jsonData;
 }
 
 /** Description: render items which included by category in category container. */
@@ -14,6 +15,7 @@ async function renderItems(jsonData){
     // find category container(target) in raw document.
     let categoryContainer = document.getElementById("category-container");
     // get keys of categories.
+    console.log(jsonData);
     let categoryKeys = await Object.keys(jsonData);
     // loop with keys to generate objects about items.
     categoryKeys.forEach((categoryKey) => {
