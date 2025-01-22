@@ -19,7 +19,7 @@ document.title = `${window.subjectName} - item list`
 
 // Change action route of add form.
 let addFormElement = document.getElementById("add-form");
-addFormElement.action = `/add/${subjectName}`;
+addFormElement.action = `/add/contents/${subjectName}`;
 
 // Track the element which clicked by user.
 let focusedElement = new FocusedElement();
@@ -57,7 +57,7 @@ fetchData().then((data)=>{
       formBody.append("title", itemComponent.getAttribute("title"));
       formBody.append("state", itemComponent.getAttribute("state"));
       // send POST request.
-      fetch(`/data/${window.subjectName}`, 
+      fetch(`/data/contents/${window.subjectName}`, 
         {
           method: "POST",
           body: formBody
@@ -108,7 +108,7 @@ modifyDialogContainer.addEventListener("submit", async (e) => {
   formBody.append("original_item", originalItem.value);
   formBody.append("original_category", originalCategory.value);
 
-  const response = await fetch(`/data/${window.subjectName}`, 
+  const response = await fetch(`/data/contents/${window.subjectName}`, 
     {
       method: "PATCH",
       body: formBody

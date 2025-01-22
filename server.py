@@ -80,7 +80,7 @@ def process_signin():
     user_data = jsonE.load(USER_DATA_DIR)
     # Check ID and PW
     if not (user_id in user_data.keys()):
-        return jsonify({"error", "ID doesn't exist."}), 404
+        return jsonify({"error": "ID doesn't exist."}), 404
     if user_data[user_id]["user_pw"] != user_pw:
         return jsonify({"error": "PW doesn't match."}), 400
     # Create cookie and set expiration time
@@ -103,7 +103,7 @@ def process_signin():
     jsonE.dumps(SESSION_STORAGE_DIR, session_storage)
     return resp
 
-# Return subject data.
+# Subject page
 @app.route("/subjects/<user_id>", methods=["GET"])
 def subjects_page(user_id):
     # Load validation of session.
@@ -120,13 +120,13 @@ def subjects_page(user_id):
             return jsonify({"error": "rotten cookie"}), 401
     verification_value = {"user_id": session_storage[cookie["device_id"]],
                           "device_id": session_storage.keys()}
-
-
     response_code = check_cookie(cookie_key_list, cookie, verification_value)
     check_time_unexpired(int(cookie["expiration_time"]))
     if user_id != cookie["user_id"]:
         LogE.e("error", "siteid")
         return jsonify({"error": "you don't have a permission to access this content."}), 401
+    
+    # Respond to user.
     if response_code == 401:
         return redirect("/")
         # return jsonify({"error": "you don't have a permission to access this content."}), response_code
@@ -137,12 +137,14 @@ def subjects_page(user_id):
         # return render_template("subjects.html") 아직 미완성이라 바로 contents로
         return render_template("subjects.html")
 
+# Test route
 @app.route("/test")
 def test():
     return render_template("subjects.html")
 
-@app.route("/contents/<subject_name>/<user_id>", methods=["GET"])
-def contents_page(subject_name, user_id):
+# Contents page.
+@app.route("/contents/<user_id>/<subject_name>", methods=["GET"])
+def contents_page(user_id, subject_name):
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
     cookie = request.cookies
     # Check user id from cookie and URL
@@ -154,6 +156,7 @@ def contents_page(subject_name, user_id):
     verifiaction_value_list = {"user_id": session_storage[cookie["device_id"]],
                                "device_id": session_storage.keys()}
     response_code = check_cookie(cookie_key_list, cookie, verifiaction_value_list)
+    LogE.e("resp", response_code)
     # Create response
     if response_code == 401:
         return redirect("/")
@@ -162,18 +165,18 @@ def contents_page(subject_name, user_id):
         return redirect("/")
         # return jsonify({"error": "internal server error."})
     elif response_code == 200:
-        return render_template(r"contents.html")
-
-    if check_time_unexpired(int(cookie["expiration_time"])):
-        remove_session(cookie["device_id"])
-        LogE.e("error", "exptime")
-        return redirect("/")
-        # return jsonify({"error": "session expired."})
-    else:
-        return redirect(f"content/def/{user_id}")
+        if check_time_unexpired(int(cookie["expiration_time"])):
+            remove_session(cookie["device_id"])
+            LogE.e("error", "exptime")
+            return redirect("/")
+            # return jsonify({"error": "session expired."})
+        else:
+            return render_template("contents.html")
     
+# Return 'subject' data to user.
 @app.route("/data/subjects/<user_id>", methods=["GET"])
 def send_subject_data_to_client(user_id):
+    # Check user's cookie.
     session_storage = jsonE.load(SESSION_STORAGE_DIR);
     cookie_key_list = ["user_id", "device_id"]
     cookie = request.cookies
@@ -192,7 +195,8 @@ def send_subject_data_to_client(user_id):
         data = jsonE.load(DATA_DIR)
         return data
 
-@app.route("/data/<subject_name>", methods=["POST"])
+# 
+@app.route("/data/contents/<subject_name>", methods=["POST"])
 def get_content_data_from_client(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
@@ -219,7 +223,8 @@ def get_content_data_from_client(subject_name):
     jsonE.dumps(DATA_DIR, data)
     return redirect(url_for("contents_page"))
 
-@app.route("/data/<subject_name>", methods=["GET"])
+# Return 'contents' data to user.
+@app.route("/data/contents/<subject_name>", methods=["GET"])
 def send_content_data_to_client(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
@@ -227,7 +232,8 @@ def send_content_data_to_client(subject_name):
     LogE.d("response", subject_data)
     return subject_data
 
-@app.route("/add/<subject_name>", methods=["POST"])
+# Process new 'content' add request in existing contents.
+@app.route("/add/contents/<subject_name>", methods=["POST"])
 def add_page(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
@@ -252,7 +258,8 @@ def add_page(subject_name):
     jsonE.dumps(DATA_DIR, data)
     return redirect(f"/contents/{subject_name}/{user_id}")
 
-@app.route("/data/<subject_name>", methods=["DELETE"])
+# Process request which remove particular 'content' from existing contents.
+@app.route("/data/contents/<subject_name>", methods=["DELETE"])
 def remove_item(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"
@@ -272,7 +279,8 @@ def remove_item(subject_name):
     jsonE.dumps(DATA_DIR, data)
     return jsonify({"message": "Item sucessfully removed"}), 200
 
-@app.route("/data/<subject_name>", methods=["PATCH"])
+# Process request which modify particular 'content' from existing contents.
+@app.route("/data/contents/<subject_name>", methods=["PATCH"])
 def modify_item(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = f"./static/data/users/{user_id}.json"

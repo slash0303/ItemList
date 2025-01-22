@@ -4,7 +4,9 @@ class SubjectItemComponent extends HTMLElement{
     }
 
     connectedCallback(){
-        let subjectContainer = document.createElement("div");
+        let subjectContainer = document.createElement("button");
+        // subjectContainer.setAttribute("role", "button");
+        subjectContainer.setAttribute("type", "submit");
         subjectContainer.setAttribute("class", "subject-container");
 
         // Create container of title line.
@@ -32,7 +34,7 @@ class SubjectItemComponent extends HTMLElement{
         titleLineContainer.appendChild(titleContainer);
 
         // Create subject menu button element.
-        let subjectMenuButton = document.createElement("button");
+        let subjectMenuButton = document.createElement("div");
         subjectMenuButton.setAttribute("class", "subject-menu-button");
 
         // Create menu button img element.
@@ -62,7 +64,7 @@ class SubjectItemComponent extends HTMLElement{
         
         // Create subject preview text element which include content's name of item.
         let itemPreviewText = document.createElement("div");
-        itemPreviewText.setAttribute("class", "itemPreviewText");
+        itemPreviewText.setAttribute("class", "item-preview-text");
         let previewText = this.getAttribute("preview");
         itemPreviewText.innerHTML = previewText;
         bottomLineContainer.appendChild(itemPreviewText);

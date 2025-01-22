@@ -9,7 +9,30 @@
             },
             "adsf": {
                 "checked": false
+            },
+            "asef": {
+                "checked": false
+            },
+            "asefasef": {
+                "checked": false
             }
+        },
+        "ㅁㄴㅇㄹ": {
+            "ㅁㄴㅇㄹ": {
+                "checked": false
+            }
+        }
+    },
+    "asdf": {
+        "adsf": {
+            "checked": {
+                "checked": false
+            }
+        }
+    },
+    "adsf": {
+        "checked": {
+            "checked": true
         }
     }
 }

@@ -30,6 +30,11 @@ header{
     background-color: white;
 }
 
+button{
+    padding-block: 0px;    
+    padding-inline: 0px;
+}
+
 #header-logo-img{
     width: 1.2rem;
     height: 1.2rem;
@@ -74,6 +79,8 @@ header{
     padding: 1rem;
     margin: 0.5rem 0rem;
 
+    width: 100%;
+
     border-radius: 0.6rem;
     
     background-color: #ffffff;
@@ -82,6 +89,8 @@ header{
 .title-line-container{
     display: flex;
     flex-direction: row;
+
+    width: -webkit-fill-available;
 
     justify-content: space-between;
     align-items: center;
@@ -129,12 +138,16 @@ header{
     border-style: solid;
     border-radius: 1rem;
 
+    width: 100%;
+
     margin: 0.5rem 0rem;
 }
 
 .bottom-line-container{
     display: flex;
     flex-direction: row;
+
+    width: -webkit-fill-available;
 
     justify-content: space-between;
     align-items: center;
