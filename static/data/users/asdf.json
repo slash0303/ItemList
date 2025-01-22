@@ -1,38 +1,70 @@
 {
-    "def": {
-        "asdf": {
-            "asdf": {
-                "checked": false
-            },
-            "aefsaf": {
-                "checked": false
-            },
+    "asdf": {
+        "cate": {
             "adsf": {
+                "checked": true
+            },
+            "asdf": {
                 "checked": false
             },
             "asef": {
                 "checked": false
             },
-            "asefasef": {
+            "aefsaf": {
                 "checked": false
             }
         },
-        "ㅁㄴㅇㄹ": {
-            "ㅁㄴㅇㄹ": {
+        "feaw": {
+            "afse": {
+                "checked": false
+            }
+        },
+        "asef": {
+            "asefasd": {
+                "checked": false
+            }
+        },
+        "asf": {
+            "asdf": {
                 "checked": false
             }
         }
     },
-    "asdf": {
-        "adsf": {
-            "checked": {
+    "def": {
+        "cate": {
+            "adsf": {
+                "checked": true
+            },
+            "asdf": {
+                "checked": false
+            },
+            "asef": {
+                "checked": false
+            },
+            "aefsaf": {
+                "checked": true
+            }
+        },
+        "asdf": {
+            "feasef": {
+                "checked": false
+            },
+            "feasefa": {
+                "checked": false
+            },
+            "asdf": {
                 "checked": false
             }
-        }
-    },
-    "adsf": {
-        "checked": {
-            "checked": true
+        },
+        "asdfaes": {
+            "sfasdf": {
+                "checked": false
+            }
+        },
+        "asef": {
+            "sadf": {
+                "checked": false
+            }
         }
     }
 }

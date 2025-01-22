@@ -9,7 +9,7 @@ window.dialogHandler = dialogHandler;
 window.removeItem = removeItem;   
 
 // Get subject name from location.
-window.subjectName = window.location.pathname.split("/")[2]; 
+window.subjectName = window.location.pathname.split("/")[3]; 
 
 // Change title of page
 let titleElement = document.getElementById("item-general-title");
