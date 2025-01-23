@@ -1,15 +1,16 @@
 import { CategoryComponent } from "./categoryComponent.js";
 import { FocusedElement, ItemComponent, changeCheckboxMode } from "./itemComponent.js";
-import { ViewState, dialogHandler, setModifyDialog, attachStopPropagWithId, attachStopPropagWithClassAll } from "./modal.js";
-
+import { ViewState, dialogHandler, setModifyDialog, attachStopPropagWithId, attachStopPropagWithClassAll } from "../common/modal.js";
+import { getCookie } from "../common/cookie.js";
 import { fetchData, renderItems, removeItem } from "./renderData.js";
 
 // Function binding for HTML button
 window.dialogHandler = dialogHandler;
-window.removeItem = removeItem;   
+window.removeItem = removeItem;
+window.changeLocation = changeLocation;
 
 // Get subject name from location.
-window.subjectName = window.location.pathname.split("/")[3]; 
+window.subjectName = decodeURI(window.location.pathname.split("/")[3]);
 
 // Change title of page
 let titleElement = document.getElementById("item-general-title");
@@ -122,3 +123,11 @@ modifyDialogContainer.addEventListener("submit", async (e) => {
     console.log(response);
   }
 });
+
+/** Description: Change user's location as specified format. */
+function changeLocation(target){
+  if (target == "subject"){
+    let user_id = getCookie("user_id");
+    window.location = `/subjects/${user_id}`;
+  }
+}

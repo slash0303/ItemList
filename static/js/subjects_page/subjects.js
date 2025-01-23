@@ -1,12 +1,13 @@
 import { SubjectItemComponent, createSubjectComponent } from "./subjectItemComponent.js";
+import { dialogHandler, attachStopPropagWithId } from "../common/modal.js";
+import { getCookie } from "../common/cookie.js";
 
-/** Description: getCookie from browser. */
-function getCookie(name) {
-    let matches = document.cookie.match(new RegExp(
-      "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    ));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
-}
+// Attach dialog handler as global function for using in HTML.
+window.dialogHandler = dialogHandler;
+
+attachStopPropagWithId("add-dialog-bg");
+attachStopPropagWithId("add-apply-button");
+
 
 // Get the id of user.
 let userId = getCookie("user_id");
@@ -18,10 +19,10 @@ fetch(`/data/subjects/${userId}`).then((data)=>{
     let subject_names = Object.keys(jsonData);
     // Create subject elements in user's viewport.
     subject_names.forEach((subject_name)=>{
-        let date = jsonData["subject_date"];
-        let description = jsonData["subject_description"];
+        let date = jsonData[subject_name]["subject_date"];
+        let description = jsonData[subject_name]["subject_description"];
         // let preview = Object.keys(data["category_name"]).slice(0, 3);
-        let counter = jsonData["subject_process"];
+        let counter = jsonData[subject_name]["subject_process"];
         createSubjectComponent(subject_name, date, description, "nah", counter);
         return;
     });
@@ -34,3 +35,4 @@ itemContainer.addEventListener("submit", (e)=>{
     let subjectName = target.getAttribute("title");
     window.location = `/contents/${userId}/${subjectName}`;
 });
+

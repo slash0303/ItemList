@@ -1,8 +1,8 @@
 {
-    "deviceIdText": {
-        "userId":{
-            "cookieValue": "cookieValueText",
-            "expirationTime": "timeData(int)"
+    "device_id": {
+        "user_id":{
+            "cookie_value": "cookieValueText",
+            "expiration_time": "timeData(int)"
         }
     }
 }

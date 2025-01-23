@@ -1,0 +1,141 @@
+.dialog-fade{
+    display: none;
+
+    background-color: #00000094;
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    width: 100vw;
+    height: 100vh;
+
+    /* transition: all 0.2s; */
+}
+
+.dialog-position-margin-area{
+    height: 20vh;
+}
+
+.dialog-content-container{
+    background-color: white;
+
+    border-radius: 0.8rem;
+
+    max-width: 22rem;
+    width: 100%;
+    padding: 0rem 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-text{
+    display: block;
+
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+
+    padding: 0px 1rem;
+
+    max-width: 20rem;
+    width: 100%;
+    height: 3rem;
+
+    /* box-shadow: 0.1rem 0.1rem 1rem rgba(0, 0, 0, 0.36); */
+
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: Pretendard;
+}
+
+.textarea-text{
+    display: block;
+    resize: none;
+
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+
+    padding: 1rem 1rem;
+
+    max-width: 20rem;
+    width: 100%;
+    height: 7rem;
+
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: Pretendard;
+    line-height: 1.5rem;
+}
+
+.center-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+}
+
+.dialog-margin-area{
+    height: 0.3rem;
+}
+
+.dialog-content-margin-area{
+    height: 1rem;
+}
+
+.dialog-label{
+    font-weight: bold;
+    font-family: Pretendard;
+    font-size: 1rem;
+
+    margin-bottom: 1rem;
+}
+
+.apply-button{
+    color: #3dc132;
+}
+
+.dialog-content-button{
+    outline: none;
+    border: none;
+
+    padding: 0.8rem 4rem;
+
+    background-color: #00000000;
+
+    font-family: Pretendard;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.dialog-line-horizontal{
+    box-shadow: none;
+    border: none;
+    border-radius: 1rem;
+
+    height: 2px;
+    width: 100%;
+
+    background-color: #e8e8e8;
+}
+
+.dialog-line-vertical{
+    box-shadow: none;
+    border: none;
+    border-radius: 1rem;
+
+    height: 100%;
+    width: 2px;
+
+    background-color: #e8e8e8;
+}
+
+#remove-button{
+    color: #f10000;
+}

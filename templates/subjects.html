@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/subjects.css">
+    <link rel="stylesheet" href="../static/css/modal.css">
+    <link rel="stylesheet" href="../static/css/header.css">
     <title>subject</title>
 </head>
 <body>
@@ -12,29 +14,37 @@
             <img id="header-logo-img" src="../static/res/checked.png">
             <div class="app-title">Item list</div>
         </div>
-        <button class="add-button">Add</button>
+        <button class="add-button" onclick="dialogHandler('add', 'open')">Add</button>
     </header>
+    <!-- add dialog start -->
+    <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
+        <div class="dialog-position-margin-area"></div>
+        <div class="center-container">
+          <form id="add-form" method="POST" charset="utf-8" action="/add/subjects">
+            <div id="add-dialog-bg" class="dialog-content-container">
+              <div class="center-container">
+                <div class="dialog-content-margin-area"></div>
+                <label class="dialog-label">Subject name</label>
+                <input required id="add-dialog-input-item" type="text" name="subject_name" class="input-text">
+                <div class="dialog-content-margin-area"></div><div class="dialog-content-margin-area"></div>
+                <label class="dialog-label">Description</label>
+                <textarea required id="add-dialog-input-item" type="text" name="subject_description" class="textarea-text"></textarea>
+                <div class="dialog-content-margin-area"></div>
+              </div>
+            </div>
+            <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
+              <button class="dialog-content-button" onclick="dialogHandler('add', 'close')">Cancel</button>
+              <div class="dialog-line-vertical"></div>
+              <button id="add-apply-button" type="submit" class="dialog-content-button apply-button">Apply</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- add dialog end -->
     <main>
+        <form id="item-container" class="item-container"> 
+        </form>
     </main>
-    <form id="item-container" class="item-container">
-        <button class="subject-container">
-            <div class="title-line-container">
-                <div class="title-container">
-                    <div class="subject-title-text">title</div>
-                    <div class="subject-date-text">2025.01.10</div>
-                </div>
-                <div onclick="" class="subject-menu-button">
-                    <img class="subject-menu-button-img" src="../static/res/menuIcon.png">
-                </div>
-            </div>
-            <div class="subject-description-text">asdfasdf</div>
-            <hr class="subject-divide-line">
-            <div class="bottom-line-container">
-                <div class="item-preview-text">item1, item2, item3</div>
-                <div class="process-counter-text">36/47</div>
-            </div>
-        </button>
-    </form>
 </body>
 <script type="module" src="../static/js/subjects_page/subjects.js"></script>
 </html>

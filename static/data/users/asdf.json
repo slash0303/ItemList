@@ -1,69 +1,52 @@
 {
-    "asdf": {
-        "cate": {
-            "adsf": {
-                "checked": true
+    "ㅁㄴㅇㄹ": {
+        "subject_description": "ㅁㄴㄷㄻㄴ",
+        "contents": {
+            "ㅁㅁㄴㅇㄹ": {
+                "ㅇㅁㄴㄹ": {
+                    "checked": false
+                }
+            },
+            "ㅁㄹㅇ": {
+                "ㄴㅇㅁㄻ": {
+                    "checked": false
+                }
+            },
+            "ㅁㄴㅇㄻㄴㅇ": {
+                "ㅁㄴㅇㄻㄴㄷㄻㄴㅇㄹ": {
+                    "checked": false
+                },
+                "ㄻㄴㅇㄻㄴㅇㄹ": {
+                    "checked": false
+                }
             },
             "asdf": {
-                "checked": false
-            },
-            "asef": {
-                "checked": false
-            },
-            "aefsaf": {
-                "checked": false
-            }
-        },
-        "feaw": {
-            "afse": {
-                "checked": false
-            }
-        },
-        "asef": {
-            "asefasd": {
-                "checked": false
-            }
-        },
-        "asf": {
-            "asdf": {
-                "checked": false
+                "asdf": {
+                    "checked": false
+                }
             }
         }
     },
-    "def": {
-        "cate": {
-            "adsf": {
-                "checked": true
+    "asdf": {
+        "subject_description": "asdfasefasdf",
+        "contents": {
+            "fuck you": {
+                "lol": {
+                    "checked": false
+                },
+                "too": {
+                    "checked": false
+                }
             },
-            "asdf": {
-                "checked": false
+            "fuck": {
+                "asdf": {
+                    "checked": false
+                }
             },
-            "asef": {
-                "checked": false
-            },
-            "aefsaf": {
-                "checked": true
-            }
-        },
-        "asdf": {
-            "feasef": {
-                "checked": false
-            },
-            "feasefa": {
-                "checked": false
-            },
-            "asdf": {
-                "checked": false
-            }
-        },
-        "asdfaes": {
-            "sfasdf": {
-                "checked": false
-            }
-        },
-        "asef": {
-            "sadf": {
-                "checked": false
+            "fuckfuck": {
+                "asdfasdfas": {
+                    "checked": false
+                }
             }
         }
     }

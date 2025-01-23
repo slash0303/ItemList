@@ -29,9 +29,25 @@ def landing_page():
 
 # Redirect to landing. modify required.
 @app.route("/", methods=["GET"])
-def redirect_to_landing():
-    # TODO: 로그인 돼있으면 subjects로 리다이렉트
-    return redirect(url_for("landing_page"))
+def root():
+    cookie = request.cookies
+    key_check = True
+    for key in ["device_id", "user_id", "expiration_time"]:
+        if not key in cookie.keys():
+            key_check = False
+    if key_check:
+        device_id = cookie["device_id"]
+        user_id = cookie["user_id"]
+        session_storage = jsonE.load(SESSION_STORAGE_DIR)
+        cookie_keys = ["user_id", "device_id", "expiration_time"]
+        verification_value_list = {"user_id": session_storage[device_id],
+                                "device_id": session_storage.keys(),
+                                "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
+        response_code = check_cookie(cookie_keys, cookie, verification_value_list)
+        # TODO: 로그인 돼있으면 subjects로 리다이렉트
+        return redirect(f"/subject/{user_id}")
+    else:
+        return redirect("/landing")
 
 # Login page.
 @app.route("/login", methods=["GET"])
@@ -114,17 +130,20 @@ def subjects_page(user_id):
     
     # Get user data from cookie.
     cookie = request.cookies
+    device_id = cookie["device_id"]
     # Check list from cookie.
-    cookie_key_list = ["user_id", "device_id"]
+    cookie_key_list = ["user_id", "device_id", "expiration_time"]
     # Check cookie has keys which declared in key_list.
     for cookie_key in cookie_key_list:
         if not (cookie_key in cookie.keys()):
             LogE.d("wtf", cookie_key)
             return jsonify({"error": "rotten cookie"}), 401
-    verification_value = {"user_id": session_storage[cookie["device_id"]],
-                          "device_id": session_storage.keys()}
+    verification_value = {"user_id": session_storage[device_id],
+                          "device_id": session_storage.keys(),
+                          "expiration_time": session_storage[device_id][user_id]}
     response_code = check_cookie(cookie_key_list, cookie, verification_value)
-    check_time_unexpired(int(cookie["expiration_time"]))
+    if check_time_expired(int(cookie["expiration_time"])):
+        return jsonify({"Rotten cookie": "Session has been expired."})
     if user_id != cookie["user_id"]:
         LogE.e("error", "siteid")
         return jsonify({"error": "you don't have a permission to access this content."}), 401
@@ -150,6 +169,7 @@ def test():
 def contents_page(user_id, subject_name):
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
     cookie = request.cookies
+    device_id = cookie["device_id"]
     # Check user id from cookie and URL
     if user_id != cookie["user_id"]:
         LogE.e("user id doesn't match", f"url: {user_id}, cookie: {cookie["user_id"]}")
@@ -157,7 +177,9 @@ def contents_page(user_id, subject_name):
 
     # verificate user's cookie.
     cookie_key_list = ["user_id", "device_id"]
-    verifiaction_value_list = {"user_id": session_storage[cookie["device_id"]],
+    if not device_id in session_storage.keys():
+        return redirect("/"), 401
+    verifiaction_value_list = {"user_id": session_storage[device_id],
                                "device_id": session_storage.keys()}
     response_code = check_cookie(cookie_key_list, cookie, verifiaction_value_list)
     LogE.d("content page: response code", response_code)
@@ -169,23 +191,105 @@ def contents_page(user_id, subject_name):
         return redirect("/")
         # return jsonify({"error": "internal server error."})
     elif response_code == 200:
-        if check_time_unexpired(int(cookie["expiration_time"])):
+        if check_time_expired(int(cookie["expiration_time"])):
             remove_session(cookie["device_id"])
             LogE.e("error", "exptime")
             return redirect("/")
             # return jsonify({"error": "session expired."})
         else:
             return render_template("contents.html")
+        
+# Process new 'content' add request in subject.
+@app.route("/add/contents/<subject_name>", methods=["POST"])
+def add_content_element(subject_name):
+    # Get user's data from cookie.
+    cookie = request.cookies
+    user_id = cookie["user_id"]
+    device_id = cookie["device_id"]
+
+    session_storage = jsonE.load(SESSION_STORAGE_DIR)
+
+    cookie_keys = ["user_id", "device_id", "expiration_time"]
+    verification_value_list = {"user_id": session_storage[device_id],
+                               "device_id": session_storage.keys(),
+                               "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
+
+    response_code = check_cookie(cookie_keys, cookie, verification_value_list)
+
+    if response_code == 401 or response_code == 500:
+        return jsonify({"unautorized": "cannot add content."})
+
+    # Load data
+    DATA_DIR = get_data_dir(user_id)
+    # Get data of new content from user's request.
+    add_category = request.form["add_category"]
+    add_item = request.form["add_item"]
+    
+    data = jsonE.load(DATA_DIR) 
+    content_data = data[subject_name]["contents"]
+    
+    # modify item if it had already exist.
+    if add_category in content_data.keys():
+        if add_item in content_data[add_category].keys():
+            # change state
+            pass
+        else:
+            content_data[add_category][add_item] = {"checked": False}
+    # create new category and item
+    else:
+        content_data[add_category] = {}
+        content_data[add_category][add_item] = {"checked": False}
+
+    data[subject_name]["contents"] = content_data
+    jsonE.dumps(DATA_DIR, data)
+    return redirect(f"/contents/{user_id}/{subject_name}")
+
+# Process new 'subject' add request.
+@app.route("/add/subjects", methods=["POST"])
+def add_subject_element():
+    # Get user's data from cookie
+    cookie = request.cookies
+    user_id = cookie["user_id"]
+    device_id = cookie["device_id"]
+    
+    # Check login session and access permission.
+    session_storage = jsonE.load(SESSION_STORAGE_DIR)
+
+    cookie_keys = ["user_id", "device_id", "expiration_time"]
+    verification_value_list = {"user_id": session_storage[device_id],
+                               "device_id": session_storage.keys(),
+                               "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
+
+    response_code = check_cookie(cookie_keys, cookie, verification_value_list)
+    if response_code == 401 or response_code == 500:
+        return jsonify({"unauthorized", "cannot add subject."})
+
+    # Get data of new subject data from form.
+    subject_name = request.form["subject_name"]
+    subject_description = request.form["subject_description"]
+
+    DATA_DIR = get_data_dir(user_id)
+    data = jsonE.load(DATA_DIR)
+    if subject_name in data.keys():
+        return jsonify({"Cannot add subject": "Subject already exist."})
+    else:
+        data[subject_name] = {"subject_description":subject_description, 
+                              "contents":{}}
+        jsonE.dumps(DATA_DIR, data)
+        return redirect(f"/contents/{user_id}/{subject_name}")
     
 # Return 'subject' data to user.
 @app.route("/data/subjects/<user_id>", methods=["GET"])
 def send_subject_data_to_client(user_id):
     # Check user's cookie.
     session_storage = jsonE.load(SESSION_STORAGE_DIR);
-    cookie_key_list = ["user_id", "device_id"]
+    cookie_key_list = ["user_id", "device_id", "expiration_time"]
     cookie = request.cookies
-    verification_value_list = {"user_id": session_storage[cookie["device_id"]],
-                               "device_id": session_storage.keys()}
+    device_id = cookie["device_id"]
+    user_id = cookie["user_id"]
+    verification_value_list = {"user_id": session_storage[device_id],
+                               "device_id": session_storage.keys(),
+                               "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
     response_code = check_cookie(cookie_key_list, cookie, verification_value_list)
     # Create response
     if response_code == 401:
@@ -199,7 +303,7 @@ def send_subject_data_to_client(user_id):
         data = jsonE.load(DATA_DIR)
         return data
 
-# 
+# Process Checked request in contents page.
 @app.route("/data/contents/<subject_name>", methods=["POST"])
 def get_content_data_from_client(subject_name):
     user_id = request.cookies.get("user_id")
@@ -211,21 +315,21 @@ def get_content_data_from_client(subject_name):
     LogE.d("target", f"{target_category}>{target_name}")
     # load data about list of item from 'data.json'
     data = jsonE.load(DATA_DIR)
-    subject_data = data[subject_name]
+    content_data = data[subject_name]["contents"]
     # modify item that already exist.
-    if target_category in subject_data.keys():
-        if target_name in subject_data[target_category].keys():
+    if target_category in content_data.keys():
+        if target_name in content_data[target_category].keys():
             # change state
-            prev_state = subject_data[target_category][target_name]["checked"]
-            subject_data[target_category][target_name]["checked"] = not prev_state
+            prev_state = content_data[target_category][target_name]["checked"]
+            content_data[target_category][target_name]["checked"] = not prev_state
         else:
-            subject_data[target_category][target_name] = {"checked": False}
+            content_data[target_category][target_name] = {"checked": False}
     # create new category and item
     else:
-        subject_data[target_category] = {}
-        subject_data[target_category][target_name] = {"checked": False}
+        content_data[target_category] = {}
+        content_data[target_category][target_name] = {"checked": False}
 
-    data[subject_name] = subject_data
+    data[subject_name]["contents"] = content_data
     jsonE.dumps(DATA_DIR, data)
     return redirect(f"/contents/{user_id}/{subject_name}")
 
@@ -234,35 +338,9 @@ def get_content_data_from_client(subject_name):
 def send_content_data_to_client(subject_name):
     user_id = request.cookies.get("user_id")
     DATA_DIR = get_data_dir(user_id)
-    subject_data = jsonE.load(DATA_DIR)[subject_name]
-    LogE.d("response", subject_data)
-    return subject_data
-
-# Process new 'content' add request in existing contents.
-@app.route("/add/contents/<subject_name>", methods=["POST"])
-def add_page(subject_name):
-    user_id = request.cookies.get("user_id")
-    DATA_DIR = get_data_dir(user_id)
-    add_category = request.form["add_category"]
-    add_item = request.form["add_item"]
-    data = jsonE.load(DATA_DIR) 
-    subject_data = data[subject_name]
-    
-    # modify item if it had already exist.
-    if add_category in subject_data.keys():
-        if add_item in subject_data[add_category].keys():
-            # change state
-            pass
-        else:
-            subject_data[add_category][add_item] = {"checked": False}
-    # create new category and item
-    else:
-        subject_data[add_category] = {}
-        subject_data[add_category][add_item] = {"checked": False}
-
-    data[subject_name] = subject_data
-    jsonE.dumps(DATA_DIR, data)
-    return redirect(f"/contents/{user_id}/{subject_name}")
+    content_data = jsonE.load(DATA_DIR)[subject_name]["contents"]
+    LogE.d("response", content_data)
+    return content_data
 
 # Process request which remove particular 'content' from existing contents.
 @app.route("/data/contents/<subject_name>", methods=["DELETE"])
@@ -275,13 +353,13 @@ def remove_item(subject_name):
     LogE.d("target category", target_category)
 
     data = jsonE.load(DATA_DIR)
-    subject_data = data[subject_name]
+    content_data = data[subject_name]["contents"]
     # remove item from loaded data.
-    del subject_data[target_category][target_item]
+    del content_data[target_category][target_item]
     # if the category is empty, remove that too.
-    if subject_data[target_category] == {}:
-        del subject_data[target_category]
-    data[subject_data] = subject_data
+    if content_data[target_category] == {}:
+        del content_data[target_category]
+    data[subject_name]["contents"] = content_data
     jsonE.dumps(DATA_DIR, data)
     return jsonify({"message": "Item sucessfully removed"}), 200
 
@@ -298,7 +376,7 @@ def modify_item(subject_name):
     LogE.g("target category", f"{original_target_category} >> {modded_target_category}")
     
     data = jsonE.load(DATA_DIR)
-    subject_data = data[subject_name]
+    content_data = data[subject_name]["contents"]
 
     if modded_target_category == "" and modded_target_item == "":
         return jsonify({"error": "At least one field must be filled in"}), 404
@@ -312,17 +390,17 @@ def modify_item(subject_name):
     # find original data
     try:
         # remove item from loaded data.
-        del subject_data[original_target_category][original_target_item]
+        del content_data[original_target_category][original_target_item]
         # if the category is empty, remove that too.
-        if subject_data[original_target_category] == {}:
-            del subject_data[original_target_category]
+        if content_data[original_target_category] == {}:
+            del content_data[original_target_category]
         if not modded_target_category in data.keys():
-            subject_data[modded_target_category] = {}
-        subject_data[modded_target_category][modded_target_item] = {"checked": False}
+            content_data[modded_target_category] = {}
+        content_data[modded_target_category][modded_target_item] = {"checked": False}
     except KeyError:
         return jsonify({"error": "Key error"}), 404
     
-    data[subject_name] = subject_data
+    data[subject_name]["contents"] = content_data
     jsonE.dumps(DATA_DIR, data)
     return jsonify({"message": "Modification sucessful"}), 200
 

@@ -1,4 +1,4 @@
-import { dialogHandler } from "./modal.js";
+import { dialogHandler } from "../common/modal.js";
 
 /** Description: get data of item list from server */
 async function fetchData(){

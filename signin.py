@@ -45,7 +45,7 @@ def test_device_id_validation(raw_device_id: str) -> bool:
     else:
         return True
     
-def check_time_unexpired(expiration_time: int) -> bool:
+def check_time_expired(expiration_time: int) -> bool:
     if expiration_time > int(t.time()):
         return False
     else:
@@ -56,27 +56,34 @@ def remove_session(device_id: str):
     del session_storage[device_id]
     jsonE.dumps(SESSION_STORAGE_DIR, session_storage)
 
-
 def check_cookie(cookie_keys: list, user_cookie, verification_value: dict) -> int:
     if len(cookie_keys) != len(verification_value):
         LogE.e("Number of elements", "length cookie keys and verfication value doesn't match.")
         return 500
     
-    
     for cookie_key in cookie_keys:
+        # Check integrity of cookie.
         if not cookie_key in user_cookie.keys():
-            LogE.e("Rotten cookie", f"user cookie doesn't have '{cookie_key}'.")
+            LogE.e("Cookie has problem", f"user cookie doesn't have '{cookie_key}'.")
             return 401
+        # Check expiration time.
+        if cookie_key == "expiration_time":
+            if check_time_expired(int(user_cookie[cookie_key])):
+                LogE.e("Rotten cookie", "expired")
+                return 401
+        # Check cookie's value with verification value.
         if (type(verification_value[cookie_key]) == list) or (type(verification_value[cookie_key]) == type({}.keys())):
             if not user_cookie[cookie_key] in verification_value[cookie_key]:
-                LogE.e("Cookie value(list or dict_keys)", f"'{cookie_key}' doesn't match with verification value.")
+                LogE.e("Cookie value(list or dict_keys)", f"'{cookie_key}' doesn't match with verification value.1")
                 return 401
         elif type(verification_value[cookie_key]) == dict:
             if not user_cookie[cookie_key] in verification_value[cookie_key].keys():
-                LogE.e("Cookie value(dict)", f"'{cookie_key}' doesn't match with verification value.")
+                LogE.e("Cookie value(dict)", f"'{cookie_key}' doesn't match with verification value.2")
                 return 401
         else:
-            if user_cookie[cookie_key] != verification_value[cookie_key]:
-                LogE.e("Cookie value", f"'{cookie_key}' doesn't match with verification value.")
+            if str(user_cookie[cookie_key]) != str(verification_value[cookie_key]):
+                LogE.e("Cookie value", f"'{cookie_key}' doesn't match with verification value.3")
                 return 401
+            
+    LogE.g("Cookie passed", "return code 200")
     return 200

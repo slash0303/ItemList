@@ -125,11 +125,13 @@ button{
 
 .subject-description-text{
     font-family: Pretendard;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: #707070;
+    text-align: left;
+    line-height: 1.1rem;
     
-    padding: 0rem 0.2rem;
+    padding: 0.1rem 0.3rem;
 }
 
 .subject-divide-line{
