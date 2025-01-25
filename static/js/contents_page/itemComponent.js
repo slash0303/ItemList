@@ -1,14 +1,14 @@
 // focused system: track the element which pressed by user.
-class FocusedElement{
-    constructor(){
+class FocusedElement {
+    constructor() {
         // find 'category-container' and attach eventlistener about 'changeFocus'.
         this.categoryContainer = document.getElementById("category-container");
-        this.categoryContainer.addEventListener("click", (e)=>{this.changeFocus(e)});
+        this.categoryContainer.addEventListener("click", (e) => { this.changeFocus(e) });
     }
 
-    changeFocus(event){
+    changeFocus(event) {
         this.element = event.srcElement;
-        while(this.element.nodeName != "ITEM-COMPONENT"){
+        while (this.element.nodeName != "ITEM-COMPONENT") {
             this.element = this.element.parentElement;
         }
         this.title = this.element.getAttribute("title");
@@ -17,12 +17,12 @@ class FocusedElement{
 }
 
 // Web-component class of item component
-class ItemComponent extends HTMLElement{
-    constructor(){
+class ItemComponent extends HTMLElement {
+    constructor() {
         super();
     }
 
-    connectedCallback(){
+    connectedCallback() {
         // create form container. form container includes 'checkbox button', 'item name', 'menu button'
         let formContainer = document.createElement("div");
         formContainer.setAttribute("class", "form-container");
@@ -34,15 +34,15 @@ class ItemComponent extends HTMLElement{
         // create button which one act as checkbox
         let checkbox = document.createElement("button");
         checkbox.setAttribute("type", "submit");
-        switch(this.getAttribute("state")){
-        case "true":
-            checkbox.setAttribute("class", "item-content-checkbox-checked");
-            break;
-        case "false":
-            checkbox.setAttribute("class", "item-content-checkbox");
-            break;
-        default:
-            new Error("an error occured while in checkbox generating");
+        switch (this.getAttribute("state")) {
+            case "true":
+                checkbox.setAttribute("class", "item-content-checkbox-checked");
+                break;
+            case "false":
+                checkbox.setAttribute("class", "item-content-checkbox");
+                break;
+            default:
+                new Error("an error occured while in checkbox generating");
         }
         checkbox.setAttribute("name", "title");
         checkbox.setAttribute("value", this.getAttribute("title"));
@@ -84,12 +84,12 @@ class ItemComponent extends HTMLElement{
         menuButton.setAttribute("title", this.getAttribute("title"));
         menuButton.setAttribute("class", "item-content-menu-button");
         menuButton.setAttribute("id", `button-${idNum}`);
-        
+
         let menuButtonImg = document.createElement("img");
         menuButtonImg.setAttribute("src", "../../static/res/menuIcon.svg");
         menuButton.appendChild(menuButtonImg);
         menuButton.setAttribute("type", "button");
-        menuButton.addEventListener("click", (e) => {this.itemMenuPopup(e)});
+        menuButton.addEventListener("click", (e) => { this.itemMenuPopup(e) });
 
         formContainer.appendChild(menuButton);
         this.appendChild(formContainer);
@@ -103,24 +103,24 @@ class ItemComponent extends HTMLElement{
         menuContent.setAttribute("title", this.getAttribute("title"));
         menuContent.setAttribute("category", this.getAttribute("category"));
         dialogHandler("menu", "open");
-    }  
-}
-
-
-/** Description: The function to change mode of checkbox. */
-function changeCheckboxMode(checkboxButton){
-    let checkboxMode = checkboxButton.getAttribute("class");
-    switch(checkboxMode){
-        case "item-content-checkbox-checked":
-        checkboxButton.setAttribute("class", "item-content-checkbox");
-        break;
-        case "item-content-checkbox":
-        checkboxButton.setAttribute("class", "item-content-checkbox-checked");
-        break;
-        default:
-        new Error("change checkbox error: checkbox mode is invaild");
     }
 }
 
 
-export { FocusedElement, ItemComponent, changeCheckboxMode}
+/** Description: The function to change mode of checkbox. */
+function changeCheckboxMode(checkboxButton) {
+    let checkboxMode = checkboxButton.getAttribute("class");
+    switch (checkboxMode) {
+        case "item-content-checkbox-checked":
+            checkboxButton.setAttribute("class", "item-content-checkbox");
+            break;
+        case "item-content-checkbox":
+            checkboxButton.setAttribute("class", "item-content-checkbox-checked");
+            break;
+        default:
+            new Error("change checkbox error: checkbox mode is invaild");
+    }
+}
+
+
+export { FocusedElement, ItemComponent, changeCheckboxMode }

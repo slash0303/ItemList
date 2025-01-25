@@ -9,8 +9,6 @@ from signin import *
 ...설명 보충해라
 '''
 
-# TODO: 나중에라도 유저 입력 validation test 추가하기
-
 # Internal directories.
 DATA_DIR = ""
 def get_data_dir(user_id: str) -> str:
@@ -40,12 +38,10 @@ def root():
         user_id = cookie["user_id"]
         session_storage = jsonE.load(SESSION_STORAGE_DIR)
         cookie_keys = ["user_id", "device_id", "expiration_time"]
-        verification_value_list = {"user_id": session_storage[device_id],
-                                "device_id": session_storage.keys(),
-                                "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
-        response_code = check_cookie(cookie_keys, cookie, verification_value_list)
+        verification_value = create_verfication_value(cookie_keys, session_storage, cookie)
+        response_code = check_cookie(cookie_keys, cookie, verification_value)
         # TODO: 로그인 돼있으면 subjects로 리다이렉트
-        return redirect(f"/subject/{user_id}")
+        return redirect(f"/subjects/{user_id}")
     else:
         return redirect("/landing")
 
@@ -92,7 +88,7 @@ def process_signin():
     hashed_device_id = str(md5(user_device_id.encode()).hexdigest())
 
     # Filter user's input
-    if not filter_string_list(user_id, user_pw) and not test_device_id_validation(user_device_id):
+    if not filter_string_list(user_id, user_pw):
         return jsonify({"error": "validate input"}), 409
     # Load session_storage and user_data
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
@@ -104,7 +100,7 @@ def process_signin():
         return jsonify({"error": "PW doesn't match."}), 400
     # Create cookie and set expiration time
     cookie_value = create_cookie_value(user_id, user_pw)
-    expiration_time = set_expiration_time(1,0,0)
+    expiration_time = set_expiration_time(1,1,0,0)
     # Create response and set cookie
     resp = make_response(redirect(f"subjects/{user_id}"))
     resp.set_cookie("user_id", user_id)
@@ -132,16 +128,14 @@ def subjects_page(user_id):
     cookie = request.cookies
     device_id = cookie["device_id"]
     # Check list from cookie.
-    cookie_key_list = ["user_id", "device_id", "expiration_time"]
+    cookie_keys = ["user_id", "device_id", "expiration_time"]
     # Check cookie has keys which declared in key_list.
-    for cookie_key in cookie_key_list:
+    for cookie_key in cookie_keys:
         if not (cookie_key in cookie.keys()):
             LogE.d("wtf", cookie_key)
             return jsonify({"error": "rotten cookie"}), 401
-    verification_value = {"user_id": session_storage[device_id],
-                          "device_id": session_storage.keys(),
-                          "expiration_time": session_storage[device_id][user_id]}
-    response_code = check_cookie(cookie_key_list, cookie, verification_value)
+    verification_value = create_verfication_value(cookie_keys, session_storage, cookie)
+    response_code = check_cookie(cookie_keys, cookie, verification_value)
     if check_time_expired(int(cookie["expiration_time"])):
         return jsonify({"Rotten cookie": "Session has been expired."})
     if user_id != cookie["user_id"]:
@@ -150,19 +144,18 @@ def subjects_page(user_id):
     
     # Respond to user.
     if response_code == 401:
-        return redirect("/")
-        # return jsonify({"error": "you don't have a permission to access this content."}), response_code
+        return jsonify({"error": "you don't have a permission to access this content."}), response_code
     elif response_code == 500:
-        return redirect("/")
-        # return jsonify({"error": "internal server error."})
+        return jsonify({"error": "internal server error."})
     elif response_code == 200:
-        # return render_template("subjects.html") 아직 미완성이라 바로 contents로
         return render_template("subjects.html")
 
-# Test route
+# Test route: deprecated.
+"""
 @app.route("/test")
 def test():
     return render_template("subjects.html")
+"""
 
 # Contents page
 @app.route("/contents/<user_id>/<subject_name>", methods=["GET"])
@@ -210,11 +203,8 @@ def add_content_element(subject_name):
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
 
     cookie_keys = ["user_id", "device_id", "expiration_time"]
-    verification_value_list = {"user_id": session_storage[device_id],
-                               "device_id": session_storage.keys(),
-                               "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
-
-    response_code = check_cookie(cookie_keys, cookie, verification_value_list)
+    verification_value = create_verfication_value(cookie_keys, session_storage, cookie)
+    response_code = check_cookie(cookie_keys, cookie, verification_value)
 
     if response_code == 401 or response_code == 500:
         return jsonify({"unautorized": "cannot add content."})
@@ -256,11 +246,9 @@ def add_subject_element():
     session_storage = jsonE.load(SESSION_STORAGE_DIR)
 
     cookie_keys = ["user_id", "device_id", "expiration_time"]
-    verification_value_list = {"user_id": session_storage[device_id],
-                               "device_id": session_storage.keys(),
-                               "expiration_time": session_storage[device_id][user_id]["expiration_time"]}
-
-    response_code = check_cookie(cookie_keys, cookie, verification_value_list)
+    verification_value = create_verfication_value(cookie_keys, session_storage, cookie)
+    
+    response_code = check_cookie(cookie_keys, cookie, verification_value)
     if response_code == 401 or response_code == 500:
         return jsonify({"unauthorized", "cannot add subject."})
 
@@ -404,6 +392,47 @@ def modify_item(subject_name):
     jsonE.dumps(DATA_DIR, data)
     return jsonify({"message": "Modification sucessful"}), 200
 
+@app.route("/data/subjects", methods=["PATCH"])
+def modify_subject():
+    # Check user's data.
+    cookie = request.cookies
+    cookie_keys = ["device_id", "user_id", "expiration_time"]
 
+    session_storage = jsonE.load(SESSION_STORAGE_DIR)
+
+    verification_value = create_verfication_value(cookie_keys, session_storage, cookie)
+    response_code = check_cookie(cookie_keys, cookie, verification_value)
+    
+    if response_code == 200:
+        # Load saved data from internal storage.
+        user_id = cookie["user_id"]
+        DATA_DIR = get_data_dir(user_id)
+        data = jsonE.load(DATA_DIR)
+        
+        # Retrieves data about modification from user's request.
+        original_target_name = request.form["original_name"]
+        modded_target_name = request.form["modded_name"]
+        modded_target_description = request.form["modded_description"]
+
+        LogE.d("original", original_target_name)
+        LogE.d("modded", modded_target_description+"_"+modded_target_name)
+
+        # Modify saved data.
+        if original_target_name in data.keys():
+            temporary_data = data[original_target_name]
+            del data[original_target_name]
+            if modded_target_description != "":
+                temporary_data["subject_description"] = modded_target_description
+            data[modded_target_name] = temporary_data
+            jsonE.dumps(DATA_DIR, data)
+            return jsonify({"data modded.": response_code}), response_code
+        else:
+            response_code = 404
+            LogE.e(f"Key error({response_code})", "cannot found target name.")
+            return jsonify({"error": "cannot found target name."}), 404
+    else:
+        return jsonify({"error": response_code}), response_code
+
+# Main
 if __name__ == "__main__":
     app.run(debug=True)

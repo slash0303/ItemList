@@ -119,8 +119,15 @@ button{
     margin-bottom: 0.3rem;
 }
 
+.subject-menu-button{
+    padding: 0.5rem 0.8rem;
+
+    display: flex;
+    align-items: center;
+}
+
 .subject-menu-button-img{
-    height: 1rem;
+    height: 0.8rem;
 }
 
 .subject-description-text{

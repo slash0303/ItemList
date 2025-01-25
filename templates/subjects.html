@@ -9,38 +9,93 @@
     <title>subject</title>
 </head>
 <body>
-    <header>
-        <div class="title-area">
-            <img id="header-logo-img" src="../static/res/checked.png">
-            <div class="app-title">Item list</div>
-        </div>
-        <button class="add-button" onclick="dialogHandler('add', 'open')">Add</button>
-    </header>
-    <!-- add dialog start -->
-    <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
-        <div class="dialog-position-margin-area"></div>
-        <div class="center-container">
-          <form id="add-form" method="POST" charset="utf-8" action="/add/subjects">
-            <div id="add-dialog-bg" class="dialog-content-container">
-              <div class="center-container">
-                <div class="dialog-content-margin-area"></div>
-                <label class="dialog-label">Subject name</label>
-                <input required id="add-dialog-input-item" type="text" name="subject_name" class="input-text">
-                <div class="dialog-content-margin-area"></div><div class="dialog-content-margin-area"></div>
-                <label class="dialog-label">Description</label>
-                <textarea required id="add-dialog-input-item" type="text" name="subject_description" class="textarea-text"></textarea>
-                <div class="dialog-content-margin-area"></div>
-              </div>
-            </div>
-            <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
-              <button class="dialog-content-button" onclick="dialogHandler('add', 'close')">Cancel</button>
-              <div class="dialog-line-vertical"></div>
-              <button id="add-apply-button" type="submit" class="dialog-content-button apply-button">Apply</button>
-            </div>
-          </form>
-        </div>
+  <header>
+      <div class="title-area">
+          <img id="header-logo-img" src="../static/res/checked.png">
+          <div class="app-title">Item list</div>
       </div>
-      <!-- add dialog end -->
+      <button class="add-button" onclick="dialogHandler('add', 'open')">Add</button>
+  </header>
+  <!-- add dialog start -->
+  <div id="add-dialog-fade" class="dialog-fade" onclick="dialogHandler('add', 'close')">
+      <div class="dialog-position-margin-area"></div>
+      <div class="center-container">
+        <form id="add-form" method="POST" charset="utf-8" action="/add/subjects">
+          <div id="add-dialog-bg" class="dialog-content-container">
+            <div class="center-container">
+              <div class="dialog-content-margin-area"></div>
+              <label class="dialog-label">Subject name</label>
+              <input required id="add-dialog-input-subject" type="text" name="subject_name" class="input-text">
+              <div class="dialog-content-margin-area"></div><div class="dialog-content-margin-area"></div>
+              <label class="dialog-label">Description</label>
+              <textarea required id="add-dialog-input-description" type="text" name="subject_description" class="textarea-text"></textarea>
+              <div class="dialog-content-margin-area"></div>
+            </div>
+          </div>
+          <div id="add-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
+            <button class="dialog-content-button" onclick="dialogHandler('add', 'close')">Cancel</button>
+            <div class="dialog-line-vertical"></div>
+            <button id="add-apply-button" type="submit" class="dialog-content-button apply-button">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- add dialog end -->
+    <!-- menu dialog start -->
+    <div id="menu-dialog-fade" class="dialog-fade" onclick="dialogHandler('menu', 'close')">
+      <div class="dialog-general-container" style="position: absolute; bottom: 0px; width: 100%;">
+        <div class="dialog-margin-area"></div>
+        <div class="center-container">
+          <div id="menu-content" class="dialog-content-container title-display"></div>
+          <div class="dialog-margin-area"></div>
+          <div class="dialog-content-container">
+            <div class="center-container">
+              <button id="modify-button" class="dialog-content-button" type="button" onclick="dialogHandler('modify', 'open')">Modify</button>
+              <div class="dialog-line-horizontal"></div>
+              <button id="move-button" class="dialog-content-button" type="button">Move</button>
+              <div class="dialog-line-horizontal"></div>
+              <button id="remove-button" class="dialog-content-button" type="button" onclick="removeItem('menu-content')">Remove</button>
+            </div>
+          </div>
+          <div class="dialog-margin-area"></div>
+          <div class="dialog-content-container">
+            <button id="cancel-button" class="dialog-content-button">Cancel</button>
+          </div>
+        </div>
+        <div class="dialog-margin-area"></div>
+      </div>
+    </div>
+    <!-- menu dialog end -->
+    <!-- modify dialog start -->
+    <div id="modify-dialog-fade" class="dialog-fade" onclick="dialogHandler('modify', 'close')">
+      <div class="dialog-general-container">
+      <div class="dialog-position-margin-area"></div>
+      <form id="modify-dialog-container" charset="utf-8" action="/data">
+        <div class="center-container">
+          <div class="dialog-margin-area"></div>
+          <div id="modify-dialog-bg" class="dialog-content-container">
+            <div class="center-container">
+              <div class="dialog-content-margin-area"></div>
+              <label class="dialog-label">Subject name</label>
+              <input id="modify-dialog-input-name" type="text" name="modded_category" class="input-text">
+              <div class="dialog-margin-area"></div>
+              <label class="dialog-label">Description</label>
+              <textarea id="modify-dialog-input-description" type="text" name="modded_item" class="textarea-text"></textarea>
+              <div class="dialog-content-margin-area"></div>
+              <div class="dialog-content-margin-area"></div>
+              <input hidden id="modify-dialog-original-name" name="original_category" value="">
+            </div>
+          </div>
+          <div id="modify-dialog-button" class="dialog-content-container" style="margin-top: 0.3rem;">
+            <button class="dialog-content-button">Cancel</button>
+            <div class="dialog-line-vertical"></div>
+            <button id="modify-apply-button" type="submit" class="dialog-content-button apply-button">Apply</button>
+          </div>
+        </div>
+      </form>
+      </div>
+    </div>
+    <!-- modify dialog end -->
     <main>
         <form id="item-container" class="item-container"> 
         </form>

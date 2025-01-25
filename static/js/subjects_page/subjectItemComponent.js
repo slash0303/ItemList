@@ -1,3 +1,21 @@
+class FocusedElement{
+    constructor(){
+        // Find all of menu button of 'subject-item-component'
+        document.querySelectorAll(".subject-menu-button").forEach((menuButton)=>{
+            menuButton.addEventListener("click", (e)=>{this.changeFocus(e)});
+        });
+    }
+
+    changeFocus(e){
+        this.element = e.srcElement;
+        while (this.element.nodeName != "SUBJECT-ITEM-COMPONENT") {
+            this.element = this.element.parentElement;
+        }
+        this.title = this.element.getAttribute("title");
+        this.description = this.element.getAttribute("description");
+    }
+}
+
 class SubjectItemComponent extends HTMLElement{
     constructor(){
         super();
@@ -36,6 +54,13 @@ class SubjectItemComponent extends HTMLElement{
         // Create subject menu button element.
         let subjectMenuButton = document.createElement("div");
         subjectMenuButton.setAttribute("class", "subject-menu-button");
+        subjectMenuButton.setAttribute("role", "button");
+        subjectMenuButton.addEventListener("click", (e)=>{
+            // Prevent submit event.
+            e.preventDefault();
+            // Open menu modal through the dialog handler which application in window instance.
+            window.dialogHandler("menu", "open");
+        });
 
         // Create menu button img element.
         let subjectMenubuttonImg = document.createElement("img");
@@ -95,4 +120,4 @@ function createSubjectComponent(title, date, description, preview, counter){
     itemContainer.appendChild(subjectComponent);
 }
 
-export { SubjectItemComponent, createSubjectComponent }
+export { SubjectItemComponent, createSubjectComponent, FocusedElement }
